@@ -1,0 +1,59 @@
+一、创建版本库
+1. 所有的版本控制系统，只能跟踪文本文件的改动，比如txt，网页，程序代码等。版本控制系统可以
+告诉你每次的改动，比如在第五行加了一个单词“linux",在第八行删了一个单词。而图片、视频这些二
+进制文件，虽然也由版本控制系统管理，但是没法跟踪文件的变化，只能把二进制文件每次的改动串起
+来，也就是只知道图片从100KB改成了120KB，到底该了啥系统不知道。Microsoft的word格式是二进制
+格式，所以版本控制系统git没法跟踪word文件的改动。
+2. 标准的UTF-8编码。windows自带的记事本编辑文件后在每个文件开头添加了0xefbbbf的字符，可能导
+致网页第一行显示”？“。
+3 建立版本库
+$ mkdir learngithub
+$ cd learngithub
+$ pwd
+/c/SPB_Data/learngit/learngithub
+$ git init
+Initialized empty Git repository in C:/SPB_Data/learngit/learngithub/.git/
+（告诉是一个空的库）
+4. 添加文件
+把文件readme.txt 放到该目录下（或者子目录）
+$ git add readme.txt
+$ git commit -m "wrote a readme file"
+(可以提交本次提交的说明）
+file changed :一个文件被改动（添加）
+insertions: 插入了两行内容
+5. 多个文件
+$ git add file1.txt
+$ git add file2.txt file3.txt
+$ git commit -m “add 3 files"
+二、时光机穿梭
+修改后
+$ git status 
+查看结果
+$ git checkout readme.txt 
+撤销修改
+$ git diff
+查看哪些有改变
+1. 版本回退
+$ git add readme.txt
+$ git commit -m "append GPL"
+$ git log  
+(查看一共有几个版本)
+$ git log --pretty=oneline
+版本的简略信息
+$ git reset --hard HEAD^
+上一个版本（^^上两个版本，HEAD~100上100个版本）
+$ git readme.txt
+查看内容
+$ git reset --hard 1094a
+指向回到未来的某个版本
+$git reflog 
+记录每一次的命令
+2. 工作区和暂存区
+	工作区working directory：learngit文佳佳就是一个工作区
+	版本库repository 隐藏目录.git 是git的版本库
+	版本库包括stage（暂存区，也叫做index）和master（git为我们自动创建的第一个分支，
+以及指向master的一个指针叫HEAD)
+	git commit 就是往master分支上提交更改。需要提交的文件修改存放在暂存区，然后一
+次性提交所有修改。
+	
+
