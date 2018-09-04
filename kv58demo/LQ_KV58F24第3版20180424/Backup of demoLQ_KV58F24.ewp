@@ -112,7 +112,7 @@
                 </option>
                 <option>
                     <name>RTConfigPath2</name>
-                    <state>$TOOLKIT_DIR$\INC\c\DLib_Config_Normal.h</state>
+                    <state>$TOOLKIT_DIR$\inc\c\DLib_Config_Normal.h</state>
                 </option>
                 <option>
                     <name>GBECoreSlave</name>
@@ -198,7 +198,7 @@
                 </option>
                 <option>
                     <name>DSPExtension</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>TrustZone</name>
@@ -2079,6 +2079,21 @@
             <data />
         </settings>
     </configuration>
+    <group>
+        <name>add</name>
+        <file>
+            <name>$PROJ_DIR$\LQuser\user\Debug.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\LQuser\user\Debug.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\LQuser\user\Flash.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\LQuser\user\Flash.h</name>
+        </file>
+    </group>
     <group>
         <name>driver</name>
         <group>

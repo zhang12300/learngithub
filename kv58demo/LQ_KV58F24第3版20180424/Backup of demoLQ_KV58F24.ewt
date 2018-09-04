@@ -2374,6 +2374,21 @@
         </settings>
     </configuration>
     <group>
+        <name>add</name>
+        <file>
+            <name>$PROJ_DIR$\LQuser\user\Debug.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\LQuser\user\Debug.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\LQuser\user\Flash.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\LQuser\user\Flash.h</name>
+        </file>
+    </group>
+    <group>
         <name>driver</name>
         <group>
             <name>HSADC</name>

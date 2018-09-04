@@ -137,67 +137,77 @@ KEY2            PTB22   //可中断触发
 
 void main(void)
 {   
-  PLL_Init(PLL235);         //设置内核及总线频率等
-  KEY_Init();               //按键及输入口初始化  
-  LED_Init();               //LED初始化
-  UART_Init(UART_4,115200); //串口初始化
-
-#ifdef __USE_TFT18          //龙邱 TFT SPI接口模块
-  TFTSPI_Init();            //LCD初始化
-  TFTSPI_CLS(u16BLUE);      //蓝色屏幕	
-  TFTSPI_Show_Logo(0,37);   //显示龙邱LOGO
-  TFTSPI_P16x16Str(0,0,"北京龙邱智能科技",u16RED,u16BLUE);		//字符串显示
-  TFTSPI_P8X16Str(0,1,"Long Qiu i.s.t.",u16WHITE,u16BLACK);		//字符串显示   
-#else                       //默认使用:龙邱 OLED SPI模块
-  LCD_Init();               //LCD初始化
-  LCD_CLS();                //清屏	  
-  LCD_Show_LQLogo();        //显示龙邱LOGO
-  LCD_P14x16Str(8,0,"北京龙邱智能科技"); //字符串显示 
-#endif
- 
-  time_delay_ms(500);       //延时  
   
-#ifdef __USE_TFT18
-  TFTSPI_CLS(u16BLACK);     //蓝色屏幕	 
-#else    
-  LCD_CLS();                //清屏	
-#endif  
-  time_delay_ms(50);        //延时  
-  EnableInterrupts
-  LED_Ctrl(LEDALL, OFF);   
-  //-----------------------------------------------------------------------------------------  
-  //  测试函数都是死循环，每次只能开启一个
-  //-----------------------------------------------------------------------------------------
-  //Test_ADC0();         //测试ADC采集功能               电磁传感器及电源电压监控 
-  //Test_UART();         //测试UART及中断                蓝牙、USB转TTL调试及通信
-  //Test_LED();          //测试GPIO输出口                LED显示及外设控制        
-  //Test_OLED();         //O测试模拟SPI功能              OLED模块功能   
-  //Test_GPIO_KEY();     //测试GPIO输入                  按键检测功能              
-  //Test_GPIO_EXINT();   //测试GPIO输入及外部中断        按键、中断检测功能  
-  //Test_Servo();        //数字舵机测试
-  //Test_Motor();        //直流电机驱动测试，            用龙邱全桥驱动板
-  //Test_9AX();          //测试I2C及龙邱九轴
-  //Test_MPU6050();      //测试I2C及6轴陀螺仪功能
-   //Test_LQV034();       //OLED显示屏及面阵摄像头动图 
-  //Test_PIT();          //测试PIT定时中断功能
-  //Test_AB_Pulse_Cnt(); //测试编码器正交解码功能
-  //Test_LPTMR_delay();  //测试LPTMR延时功能                
-  Test_LPTMR_Counter();//测试LPTMR计数功能   
-  //Test_DMA_Counter();  //测试DMA计数功能   
-  //TFTSPI_Test();          //测试龙邱TFT1.8吋SPI彩屏
-  //Test_OLED();  
-  //-----------------------------------------------------------------------------------------
-  //LCD_Show_LQLogo();
-  while(1)
-    {   
-      
-     /* LED_Ctrl(LED0, RVS);//反转   
-      LED_Ctrl(LED1, RVS);//反转 
-      LED_Ctrl(LED2, RVS);//反转 
-      LED_Ctrl(LED3, RVS);//反转 
-      time_delay_ms(500); //延时  */         
-    }
-} 
+    uint8 flag;  //如果有用OLED修改参数的话，参数flag会被置位
+    uint32 tic1;
+    uint32 tic2,tic3,tic4,tic5,tic6,tic7,tic8,tic9,tic10,tic11; //这里一堆tic是调试时用来计时的
+    GPIO_Init(PORTC, 1, 1, 0);                                  //这四个是电机输出的引脚
+    GPIO_Init(PORTC, 2, 1, 0);
+    GPIO_Init(PORTC, 3, 1, 0);
+    GPIO_Init(PORTC, 4, 1, 0);
+    
+    
+//  PLL_Init(PLL235);         //设置内核及总线频率等
+ //KEY_Init();               //按键及输入口初始化  
+//  LED_Init();               //LED初始化
+//  UART_Init(UART_4,115200); //串口初始化
+//
+//#ifdef __USE_TFT18          //龙邱 TFT SPI接口模块
+//  TFTSPI_Init();            //LCD初始化
+//  TFTSPI_CLS(u16BLUE);      //蓝色屏幕	
+//  TFTSPI_Show_Logo(0,37);   //显示龙邱LOGO
+//  TFTSPI_P16x16Str(0,0,"北京龙邱智能科技",u16RED,u16BLUE);		//字符串显示
+//  TFTSPI_P8X16Str(0,1,"Long Qiu i.s.t.",u16WHITE,u16BLACK);		//字符串显示   
+//#else                       //默认使用:龙邱 OLED SPI模块
+//  LCD_Init();               //LCD初始化
+//  LCD_CLS();                //清屏	  
+//  LCD_Show_LQLogo();        //显示龙邱LOGO
+//  LCD_P14x16Str(8,0,"北京龙邱智能科技"); //字符串显示 
+//#endif
+// 
+//  time_delay_ms(500);       //延时  
+//  
+//#ifdef __USE_TFT18
+//  TFTSPI_CLS(u16BLACK);     //蓝色屏幕	 
+//#else    
+//  LCD_CLS();                //清屏	
+//#endif  
+//  time_delay_ms(50);        //延时  
+//  EnableInterrupts
+//  LED_Ctrl(LEDALL, OFF);   
+//  //-----------------------------------------------------------------------------------------  
+//  //  测试函数都是死循环，每次只能开启一个
+//  //-----------------------------------------------------------------------------------------
+//  //Test_ADC0();         //测试ADC采集功能               电磁传感器及电源电压监控 
+//  //Test_UART();         //测试UART及中断                蓝牙、USB转TTL调试及通信
+//  //Test_LED();          //测试GPIO输出口                LED显示及外设控制        
+//  //Test_OLED();         //O测试模拟SPI功能              OLED模块功能   
+//  //Test_GPIO_KEY();     //测试GPIO输入                  按键检测功能              
+//  //Test_GPIO_EXINT();   //测试GPIO输入及外部中断        按键、中断检测功能  
+//  //Test_Servo();        //数字舵机测试
+//  //Test_Motor();        //直流电机驱动测试，            用龙邱全桥驱动板
+//  //Test_9AX();          //测试I2C及龙邱九轴
+//  //Test_MPU6050();      //测试I2C及6轴陀螺仪功能
+//   //Test_LQV034();       //OLED显示屏及面阵摄像头动图 
+//  //Test_PIT();          //测试PIT定时中断功能
+//  //Test_AB_Pulse_Cnt(); //测试编码器正交解码功能
+//  //Test_LPTMR_delay();  //测试LPTMR延时功能                
+//  //Test_LPTMR_Counter();//测试LPTMR计数功能   
+//  //Test_DMA_Counter();  //测试DMA计数功能   
+//  //TFTSPI_Test();          //测试龙邱TFT1.8吋SPI彩屏
+//  //Test_OLED();  
+//  //-----------------------------------------------------------------------------------------
+//  //LCD_Show_LQLogo();
+//  while(1)
+//    {   
+//      
+//     /* LED_Ctrl(LED0, RVS);//反转   
+//      LED_Ctrl(LED1, RVS);//反转 
+//      LED_Ctrl(LED2, RVS);//反转 
+//      LED_Ctrl(LED3, RVS);//反转 
+//      time_delay_ms(500); //延时  */         
+//    }
+//} 
 
 /*******************************************************************************
 * EOF
