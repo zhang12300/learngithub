@@ -36,7 +36,12 @@ void FlashInit(void)
   hw_flash_sign_off();
     
   //½ûÖ¹¿´ÃÅ¹·
-  WDOG_UNLOCK = 0xC520;
+  WDOG_UNLOCK = 0xC520;//Writing the unlock sequence values to this register to make the watchdog write-once registers writable 
+                       //again. The required unlock squence is 0xc520 followed by 0xd928 within 20 bus clock cycles. A valid 
+                       //unlock sequence opens a window equal in length to the WCT within which you can update the registers.
+                       // writing a value other than the above mentioned sequence or if the ssequence is longer than 20 bus cycles,
+                       //reset the system or if IRQRSTEN is set,it interrupts and then resets the system. The unlock sequence is effective 
+                       // only if ALLOWUPDATE is set.
   WDOG_UNLOCK = 0xD928;
   WDOG_STCTRLH = 0;
     
@@ -153,8 +158,12 @@ uint8 FlashWrite(uint16 sectNo,uint16 offset,uint16 cnt,uint8 buf[])
 void hw_flash_sign_off(void)
 {  
   //Çå³ý»º³å
-  FMC_PFB0CR |= FMC_PFB0CR_S_B_INV_MASK;
-  FMC_PFB1CR |= FMC_PFB0CR_S_B_INV_MASK;
+  FMC_PFB0CR |= FMC_PFB0CR_S_INV_MASK;//p724 S_INV:invalidate Prefetch Speculation Buffer
+                                              //S_INV bit determines if the FMC's prefetch speculation buffer is to be invalidated(cleared).
+                                              //When S_INV bit is written ,the prefetch speculation buffer is immediately cleared. Whenever
+                                              // flash memory is modified, the prefetch speculation buffer should be cleared. S_INV bit 
+                                              // always reads as zero.
+  
 }
 
 //==============================================================================
