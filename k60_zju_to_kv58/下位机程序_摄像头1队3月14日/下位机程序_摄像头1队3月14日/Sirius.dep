@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+    <fileVersion>4</fileVersion>
+    <fileChecksum>169587241</fileChecksum>
+    <configuration>
+        <name>FLASH</name>
+        <outputs>
+            <file>$TOOLKIT_DIR$\lib\m7M_tl.a</file>
+            <file>$PROJ_DIR$\FLASH\Obj\ImageGet.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\ImagePro.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\LQ12864.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\crt0.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\CameraSet.o</file>
+            <file>$TOOLKIT_DIR$\lib\rt7M_tl.a</file>
+            <file>$PROJ_DIR$\FLASH\Obj\sysinit.o</file>
+            <file>$TOOLKIT_DIR$\lib\dl7M_tln.a</file>
+            <file>$PROJ_DIR$\FLASH\Obj\BatteryCheck.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\ImagePro.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\adc.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\main.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\wdog.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\Ftm.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\SCCB.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\start.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\vectors.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\uart.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\RunControl.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\VirtualScope.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\Fuzzy.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\main.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\isr.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\common.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\Pit.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\LightHouse.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\gpio.o</file>
+            <file>$PROJ_DIR$\FLASH\List\Sirius.map</file>
+            <file>$TOOLKIT_DIR$\lib\shb_l.a</file>
+            <file>$PROJ_DIR$\FLASH\Obj\light.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\DMA.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\wdog.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\start.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\Flash.o</file>
+            <file>$PROJ_DIR$\FLASH\Obj\Debug.o</file>
+            <file>$PROJ_DIR$\src\SiriusLog.txt</file>
+            <file>$PROJ_DIR$\FLASH\Obj\RunControl.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\gpio.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\Pit.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\sysinit.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\isr.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\LQ12864.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\Ftm.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\Debug.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\BatteryCheck.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\Flash.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\common.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\SCCB.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\CameraSet.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\vectors.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\VirtualScope.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\uart.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\LightHouse.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\ImageGet.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\Fuzzy.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Exe\Sirius.out</file>
+            <file>$PROJ_DIR$\FLASH\Obj\DMA.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Obj\light.pbi</file>
+            <file>$PROJ_DIR$\FLASH\Exe\Sirius.srec</file>
+            <file>$PROJ_DIR$\FLASH\Obj\adc.pbi</file>
+            <file>$PROJ_DIR$\src\Sources\C\main.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Function_C\LQ12864.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\isr.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Function_C\ImagePro.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Function_C\LightHouse.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Function_C\SCCB.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Function_C\VirtualScope.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Function_C\RunControl.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Function_C\BatteryCheck.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Frame_C\vectors.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Function_C\CameraSet.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Function_C\Flash.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Component_C\Pit.c</file>
+            <file>$PROJ_DIR$\src\Project_Settings\Link\Ram.icf</file>
+            <file>$PROJ_DIR$\src\Sources\C\Frame_C\common.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Function_C\Debug.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Function_C\Ftm.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Function_C\Fuzzy.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Component_C\DMA.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Function_C\ImageGet.c</file>
+            <file>$PROJ_DIR$\src\Project_Settings\Link\Pflash.icf</file>
+            <file>$PROJ_DIR$\src\Sources\C\Component_C\gpio.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Component_C\adc.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Component_C\uart.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Component_C\wdog.c</file>
+            <file>$PROJ_DIR$\src\Project_Settings\Startup_Code\crt0.s</file>
+            <file>$PROJ_DIR$\src\Project_Settings\Startup_Code\start.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Component_C\light.c</file>
+            <file>$PROJ_DIR$\src\Sources\C\Frame_C\sysinit.c</file>
+        </outputs>
+        <file>
+            <name>[ROOT_NODE]</name>
+            <outputs>
+                <tool>
+                    <name>ILINK</name>
+                    <file> 56 28</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\FLASH\Exe\Sirius.out</name>
+            <outputs>
+                <tool>
+                    <name>ILINK</name>
+                    <file> 28</file>
+                </tool>
+                <tool>
+                    <name>OBJCOPY</name>
+                    <file> 59</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ILINK</name>
+                    <file> 81 11 9 5 24 4 35 31 34 14 21 27 1 10 23 30 26 3 22 25 19 15 33 7 18 17 20 32 29 6 0 8</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\main.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 22</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 12</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Function_C\LQ12864.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 3</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 42</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\isr.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 23</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 41</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Function_C\ImagePro.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 10</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 2</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Function_C\LightHouse.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 26</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 53</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Function_C\SCCB.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 15</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 48</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Function_C\VirtualScope.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 20</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 51</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Function_C\RunControl.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 19</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 37</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Function_C\BatteryCheck.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 9</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 45</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Frame_C\vectors.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 17</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 50</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Function_C\CameraSet.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 5</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 49</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Function_C\Flash.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 34</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 46</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Component_C\Pit.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 25</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 39</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Frame_C\common.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 24</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 47</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Function_C\Debug.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 35</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 44</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Function_C\Ftm.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 14</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 43</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Function_C\Fuzzy.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 21</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 55</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Component_C\DMA.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 31</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 57</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Function_C\ImageGet.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 1</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 54</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Component_C\gpio.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 27</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 38</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Component_C\adc.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 11</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 60</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Component_C\uart.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 18</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 52</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Component_C\wdog.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 32</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 13</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Project_Settings\Startup_Code\crt0.s</name>
+            <outputs>
+                <tool>
+                    <name>AARM</name>
+                    <file> 4</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Project_Settings\Startup_Code\start.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 33</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 16</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Component_C\light.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 30</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 58</file>
+                </tool>
+            </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\src\Sources\C\Frame_C\sysinit.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCARM</name>
+                    <file> 7</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 40</file>
+                </tool>
+            </outputs>
+        </file>
+    </configuration>
+    <configuration>
+        <name>RAM</name>
+        <outputs />
+        <forcedrebuild>
+            <name>[MULTI_TOOL]</name>
+            <tool>ILINK</tool>
+        </forcedrebuild>
+    </configuration>
+</project>

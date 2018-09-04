@@ -1,0 +1,737 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.10.1.12857/W32 for ARM       30/Aug/2018  15:15:46
+# Copyright 1999-2017 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\C\Function_C\CameraSet.c
+#    Command line =  
+#        -f C:\Users\Lenovo\AppData\Local\Temp\EW83D4.tmp
+#        (C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\C\Function_C\CameraSet.c
+#        -D IAR -D TWR_K60N512 --preprocess
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List
+#        -lCN
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List
+#        -lB
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List
+#        -o
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.0\arm\INC\c\DLib_Config_Full.h"
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\Component_H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\Frame_H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\Function_H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\SD_H\
+#        -I D:\quartus\quartus\cusp\80\synthinclude\ -Ol --use_c++_inline -I
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.0\arm\CMSIS\Include\" -D ARM_MATH_CM4)
+#    Locale       =  C
+#    List file    =  
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List\CameraSet.lst
+#    Object file  =  
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\Obj\CameraSet.o
+#
+###############################################################################
+
+C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\C\Function_C\CameraSet.c
+      1          /******************************************************************************/
+      2          /*******************************************************************************
+      3            文件名：摄像头寄存器设置文件CameraSet.c
+      4            功  能：摄像头特性控制
+      5            日  期：2014.10.09
+      6            作  者：HJZ
+      7            备  注：
+      8          *******************************************************************************/
+      9          /******************************************************************************/
+     10          //头文件
+     11          #include "CameraSet.h"
+     12          
+     13          
+     14          //全局变量声明
+
+   \                                 In section .data, align 1
+     15          volatile ImgStatusDef ImgStatus = ImgGetFinish;   //当前图像状态标志标志位
+   \                     ImgStatus:
+   \   00000000   0x01               DC8 1
+     16          //uint8 ImgRaw[CameraHight][CameraWidth];           //原始数据储存数组
+
+   \                                 In section .bss, align 4
+     17          uint8 ImgStore1[CameraHight][CameraWidth];                    //图像数据储存数组1
+   \                     ImgStore1:
+   \   00000000                      DS8 19200
+
+   \                                 In section .bss, align 4
+     18          uint8 ImgStore2[CameraHight][CameraWidth];                    //图像数据储存数组2
+   \                     ImgStore2:
+   \   00000000                      DS8 19200
+     19          
+     20          //uint8 ImgSend[CameraWidth * CameraHight];      //要传送到上位机的数组，由于鹰眼摄像头是一字节8个像素，因而需要解压为 1字节1个像素，方便处理
+     21          
+     22          //OV7725寄存器专用初始值，全局变量
+
+   \                                 In section .data, align 4
+     23          CameraRegs OV7725Regs[] =
+   \                     OV7725Regs:
+   \   00000000   0x0D 0xC1          DC8 13, 193, 17, 0, 9, 3, 12, 208, 18, 64, 23, 63, 24, 80, 25, 3, 26
+   \              0x11 0x00    
+   \              0x09 0x03    
+   \              0x0C 0xD0    
+   \              0x12 0x40    
+   \              0x17 0x3F    
+   \              0x18 0x50    
+   \              0x19 0x03    
+   \              0x1A         
+   \   00000011   0x78 0x32          DC8 120, 50, 0, 160, 10, 99, 224, 172, 255, 101, 12, 102, 0, 103, 0, 41
+   \              0x00 0xA0    
+   \              0x0A 0x63    
+   \              0xE0 0xAC    
+   \              0xFF 0x65    
+   \              0x0C 0x66    
+   \              0x00 0x67    
+   \              0x00 0x29    
+   \   00000021   0x50 0x2C          DC8 80, 44, 30, 42, 0, 126, 12, 127, 22, 128, 42, 129, 78, 130, 97, 131
+   \              0x1E 0x2A    
+   \              0x00 0x7E    
+   \              0x0C 0x7F    
+   \              0x16 0x80    
+   \              0x2A 0x81    
+   \              0x4E 0x82    
+   \              0x61 0x83    
+   \   00000031   0x6F 0x84          DC8 111, 132, 123, 133, 134, 134, 142, 135, 151, 136, 164, 137, 175
+   \              0x7B 0x85    
+   \              0x86 0x86    
+   \              0x8E 0x87    
+   \              0x97 0x88    
+   \              0xA4 0x89    
+   \              0xAF         
+   \   0000003E   0x8A 0xC5          DC8 138, 197, 139, 215, 140, 232, 141, 32, 74, 0, 73, 19, 71, 8, 75, 20
+   \              0x8B 0xD7    
+   \              0x8C 0xE8    
+   \              0x8D 0x20    
+   \              0x4A 0x00    
+   \              0x49 0x13    
+   \              0x47 0x08    
+   \              0x4B 0x14    
+   \   0000004E   0x4C 0x17          DC8 76, 23, 70, 5, 34, 153, 35, 3, 166, 4, 155, 0, 156, 255, 171, 6
+   \              0x46 0x05    
+   \              0x22 0x99    
+   \              0x23 0x03    
+   \              0xA6 0x04    
+   \              0x9B 0x00    
+   \              0x9C 0xFF    
+   \              0xAB 0x06    
+   \   0000005E   0x9E 0x11          DC8 158, 17, 159, 2, 0, 0
+   \              0x9F 0x02    
+   \              0x00 0x00    
+     24          {
+     25              //寄存器地址，寄存器值
+     26              {OV7725_COM4         , 0xC1},//01
+     27              {OV7725_CLKRC        , 0x00},//02
+     28              {OV7725_COM2         , 0x03},//03
+     29              {OV7725_COM3         , 0xD0},//04
+     30              {OV7725_COM7         , 0x40},//05
+     31              {OV7725_HSTART       , 0x3F},//06
+     32              {OV7725_HSIZE        , 0x50},//07
+     33              {OV7725_VSTRT        , 0x03},//08
+     34              {OV7725_VSIZE        , 0x78},//09
+     35              {OV7725_HREF         , 0x00},//10
+     36              {OV7725_SCAL0        , 0x0A},//11
+     37              {OV7725_AWB_Ctrl0    , 0xE0},//12
+     38              {OV7725_DSPAuto      , 0xff},//13
+     39              {OV7725_DSP_Ctrl2    , 0x0C},//14
+     40              {OV7725_DSP_Ctrl3    , 0x00},//15
+     41              {OV7725_DSP_Ctrl4    , 0x00},//16
+     42          
+     43          #if (CameraWidth == 80)             //17
+     44              {OV7725_HOutSize     , 0x14},   //共10位，此为高8位，低2位在OV7725_EXHCH中，为00。80，即0x50,右移2位，即0x14
+     45          #elif (CameraWidth == 160)
+     46              {OV7725_HOutSize     , 0x28},
+     47          #elif (CameraWidth == 240)
+     48              {OV7725_HOutSize     , 0x3c},
+     49          #elif (CameraWidth == 320)
+     50              {OV7725_HOutSize     , 0x50},
+     51          #else
+     52          
+     53          #endif
+     54          
+     55          #if (CameraHight == 60 )             //18
+     56              {OV7725_VOutSize     , 0x1E},   //共9位，此为高8位，低1位在OV7725_EXHCH中，为0。 60，即0x3C,右移1位，即0x1E
+     57          #elif (CameraHight == 120 )
+     58              {OV7725_VOutSize     , 0x3c},
+     59          #elif (CameraHight == 180 )
+     60              {OV7725_VOutSize     , 0x5a},
+     61          #elif (CameraHight == 240 )
+     62              {OV7725_VOutSize     , 0x78},
+     63          #else
+     64          
+     65          #endif
+     66          
+     67              {OV7725_EXHCH        , 0x00},//19
+     68              {OV7725_GAM1         , 0x0c},//20
+     69              {OV7725_GAM2         , 0x16},//21
+     70              {OV7725_GAM3         , 0x2a},//22
+     71              {OV7725_GAM4         , 0x4e},//23
+     72              {OV7725_GAM5         , 0x61},//24
+     73              {OV7725_GAM6         , 0x6f},//25
+     74              {OV7725_GAM7         , 0x7b},//26
+     75              {OV7725_GAM8         , 0x86},//27
+     76              {OV7725_GAM9         , 0x8e},//28
+     77              {OV7725_GAM10        , 0x97},//29
+     78              {OV7725_GAM11        , 0xa4},//30
+     79              {OV7725_GAM12        , 0xaf},//31
+     80              {OV7725_GAM13        , 0xc5},//32
+     81              {OV7725_GAM14        , 0xd7},//33
+     82              {OV7725_GAM15        , 0xe8},//34
+     83              {OV7725_SLOP         , 0x20},//35
+     84              {OV7725_LC_RADI      , 0x00},//36
+     85              {OV7725_LC_COEF      , 0x13},//37
+     86              {OV7725_LC_XC        , 0x08},//38
+     87              {OV7725_LC_COEFB     , 0x14},//39
+     88              {OV7725_LC_COEFR     , 0x17},//40
+     89              {OV7725_LC_CTR       , 0x05},//41
+     90              {OV7725_BDBase       , 0x99},//42
+     91              {OV7725_BDMStep      , 0x03},//43
+     92              {OV7725_SDE          , 0x04},//44
+     93              {OV7725_BRIGHT       , 0x00},//45
+     94              {OV7725_CNST         , 0xFF},//46
+     95              {OV7725_SIGN         , 0x06},//47
+     96              {OV7725_UVADJ0       , 0x11},//48
+     97              {OV7725_UVADJ1       , 0x02},//49
+     98          
+     99          };
+    100          
+    101          //OV7620寄存器专用初始值，全局变量
+
+   \                                 In section .data, align 4
+    102          CameraRegs OV7620Regs[] =
+   \                     OV7620Regs:
+   \   00000000   0x0D 0xC1          DC8 13, 193, 17, 0
+   \              0x11 0x00    
+    103          {
+    104                //寄存器地址，寄存器值
+    105              {OV7725_COM4         , 0xC1},//01
+    106              {OV7725_CLKRC        , 0x00},//02
+    107          };
+    108          
+    109          
+    110          
+    111          
+    112          
+    113          //函数
+    114          
+    115          //CameraDelay函数
+    116          //5步 * 30000 * 1 = 150000 次运算，也就是1ms，不一定准。
+
+   \                                 In section .text, align 4, keep-with-next
+    117          void CameraDelay(uint32 time)
+    118          {
+   \                     CameraDelay: (+1)
+   \   00000000   0xB081             SUB      SP,SP,#+4
+    119            volatile uint32 timecount = time * 30000;
+   \   00000002   0xF247 0x5130      MOVW     R1,#+30000
+   \   00000006   0x4348             MULS     R0,R1,R0
+   \   00000008   0x9000             STR      R0,[SP, #+0]
+   \   0000000A   0xE003             B.N      ??CameraDelay_0
+    120            while(timecount--)
+    121            {
+    122              asm("nop");  
+   \                     ??CameraDelay_1: (+1)
+   \   0000000C   0xBF00             nop
+    123              asm("nop");  
+   \   0000000E   0xBF00             nop
+    124              asm("nop");  
+   \   00000010   0xBF00             nop
+    125              asm("nop");  
+   \   00000012   0xBF00             nop
+    126            }
+   \                     ??CameraDelay_0: (+1)
+   \   00000014   0x9800             LDR      R0,[SP, #+0]
+   \   00000016   0x1E41             SUBS     R1,R0,#+1
+   \   00000018   0x9100             STR      R1,[SP, #+0]
+   \   0000001A   0x2800             CMP      R0,#+0
+   \   0000001C   0xD1F6             BNE.N    ??CameraDelay_1
+    127          }
+   \   0000001E   0xB001             ADD      SP,SP,#+4
+   \   00000020   0x4770             BX       LR               ;; return
+    128          
+    129          
+    130          //摄像头所需端口配置
+
+   \                                 In section .text, align 2, keep-with-next
+    131          void CameraPortInit(void)
+    132          {
+   \                     CameraPortInit: (+1)
+   \   00000000   0xB082             SUB      SP,SP,#+8
+    133              uint8 i;                                  
+    134              uint8 IMAGE_PIN_IN[8] = {0,1,2,3,4,5,6,7};    
+   \   00000002   0x4668             MOV      R0,SP
+   \   00000004   0x....             LDR.N    R1,??DataTable2
+   \   00000006   0xE9D1 0x2300      LDRD     R2,R3,[R1, #+0]
+   \   0000000A   0xE9C0 0x2300      STRD     R2,R3,[R0, #+0]
+    135              PORT_MemMapPtr p = PORT_IMAGE_DATA_BASE_PTR;
+   \   0000000E   0x....             LDR.N    R1,??DataTable2_1  ;; 0x4004a000
+    136              
+    137              //图像数据输入口初始化， PTB0~PTB7均设置为摄像头数据输入，下拉电阻 
+    138              //SIM_SCGC5 |= SIM_SCGC5_PORTB_MASK;
+    139              for(i = 0;i < 8;i++)
+   \   00000010   0x2000             MOVS     R0,#+0
+   \   00000012   0xE018             B.N      ??CameraPortInit_0
+    140              {
+    141                  //相应的端口引脚初始化,不用输入，
+    142                  //gpio_init(PORT_IMAGE_DATA,IMAGE_PIN_IN[i],0,0);
+    143                  //设置端口为GPIO模式，默认上拉电阻
+    144                  PORT_PCR_REG(p,IMAGE_PIN_IN[i]) |= PORT_PCR_MUX(0x01) | PORT_PCR_PE_MASK;
+   \                     ??CameraPortInit_1: (+1)
+   \   00000014   0x466A             MOV      R2,SP
+   \   00000016   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000018   0x5C12             LDRB     R2,[R2, R0]
+   \   0000001A   0x466B             MOV      R3,SP
+   \   0000001C   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000001E   0x5C1B             LDRB     R3,[R3, R0]
+   \   00000020   0xF851 0x3023      LDR      R3,[R1, R3, LSL #+2]
+   \   00000024   0xF453 0x7381      ORRS     R3,R3,#0x102
+   \   00000028   0xF841 0x3022      STR      R3,[R1, R2, LSL #+2]
+    145                  //设置为下拉电阻
+    146                  PORT_PCR_REG(p,IMAGE_PIN_IN[i]) &= ~PORT_PCR_PS_MASK;
+   \   0000002C   0x466A             MOV      R2,SP
+   \   0000002E   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000030   0x5C12             LDRB     R2,[R2, R0]
+   \   00000032   0x466B             MOV      R3,SP
+   \   00000034   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000036   0x5C1B             LDRB     R3,[R3, R0]
+   \   00000038   0xF851 0x3023      LDR      R3,[R1, R3, LSL #+2]
+   \   0000003C   0x085B             LSRS     R3,R3,#+1
+   \   0000003E   0x005B             LSLS     R3,R3,#+1
+   \   00000040   0xF841 0x3022      STR      R3,[R1, R2, LSL #+2]
+    147                  
+    148              }
+   \   00000044   0x1C40             ADDS     R0,R0,#+1
+   \                     ??CameraPortInit_0: (+1)
+   \   00000046   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000048   0x2808             CMP      R0,#+8
+   \   0000004A   0xDBE3             BLT.N    ??CameraPortInit_1
+    149              
+    150              
+    151              //场中断输入引脚初始化, 下降沿触发中断，暂定为PTD1
+    152              //无上下拉电阻，无滤波
+    153              PORT_PCR_REG(PORT_FIELD_BASE_PTR, PIN_FIELD) |= (
+    154                                                              PORT_PCR_MUX(0x01)    //GPIO
+    155                                                         //   | PORT_PCR_PE_MASK    //上拉电阻
+    156                                                            | PORT_PCR_IRQC(0xA)   //下降沿触发中断
+    157                                                         //   | PORT_PCR_PFE_MASK   //滤波
+    158                                                              );    
+   \   0000004C   0x....             LDR.N    R0,??DataTable2_2  ;; 0x4004c004
+   \   0000004E   0x6800             LDR      R0,[R0, #+0]
+   \   00000050   0xF440 0x2020      ORR      R0,R0,#0xA0000
+   \   00000054   0xF450 0x7080      ORRS     R0,R0,#0x100
+   \   00000058   0x....             LDR.N    R1,??DataTable2_2  ;; 0x4004c004
+   \   0000005A   0x6008             STR      R0,[R1, #+0]
+    159              //行中断输入引脚初始化, 上升沿触发中断，暂定为PTC8
+    160              //无上下拉电阻，无滤波
+    161              PORT_PCR_REG(PORT_LINE_BASE_PTR, PIN_LINE) |= (
+    162                                                              PORT_PCR_MUX(0x01)    //GPIO
+    163                                                         //   | PORT_PCR_PE_MASK    //上拉电阻
+    164                                                            | PORT_PCR_IRQC(0x9)    //上升沿触发中断
+    165                                                         //   | PORT_PCR_PFE_MASK   //滤波
+    166                                                              );   
+   \   0000005C   0x....             LDR.N    R0,??DataTable2_3  ;; 0x4004b020
+   \   0000005E   0x6800             LDR      R0,[R0, #+0]
+   \   00000060   0xF440 0x2010      ORR      R0,R0,#0x90000
+   \   00000064   0xF450 0x7080      ORRS     R0,R0,#0x100
+   \   00000068   0x....             LDR.N    R1,??DataTable2_3  ;; 0x4004b020
+   \   0000006A   0x6008             STR      R0,[R1, #+0]
+    167              
+    168              //PCLK输入引脚初始化，上升沿触发DMA， 暂定为PTB9
+    169              //无上下拉电阻，无滤波
+    170              PORT_PCR_REG(PORT_PCLK_BASE_PTR, PIN_PCLK) |= (
+    171                                                              PORT_PCR_MUX(0x01) //GPIO
+    172                                                          //  | PORT_PCR_PE_MASK   //上拉电阻
+    173                                                            | PORT_PCR_IRQC(0x1) //上升沿触发DMA
+    174                                                             );         
+   \   0000006C   0x....             LDR.N    R0,??DataTable2_4  ;; 0x4004a024
+   \   0000006E   0x6800             LDR      R0,[R0, #+0]
+   \   00000070   0xF440 0x3080      ORR      R0,R0,#0x10000
+   \   00000074   0xF450 0x7080      ORRS     R0,R0,#0x100
+   \   00000078   0x....             LDR.N    R1,??DataTable2_4  ;; 0x4004a024
+   \   0000007A   0x6008             STR      R0,[R1, #+0]
+    175          }
+   \   0000007C   0xB002             ADD      SP,SP,#+8
+   \   0000007E   0x4770             BX       LR               ;; return
+    176          
+    177          
+    178          /*
+    179          //OV7725摄像头寄存器初始化 成功返回1 失败返回0
+    180          uint8 CameraRegInit(void)
+    181          {
+    182              uint8 i;
+    183              uint8 SensorID = 1;
+    184              uint8 Send_Tmp[1] = {"1"};
+    185              
+    186              //SCCB信号引脚配置
+    187              SCCBPortInit();
+    188              
+    189              //复位摄像头所有寄存器
+    190              if(SCCBWriteByte(OV7725_COM7, 0x80) == 0)
+    191              {
+    192                  uart_sendN(UART0, (uint8 *)"\nCamera Registers Reset Failed!", 31);
+    193                  return 0;
+    194              }
+    195              
+    196              //延时
+    197              CameraDelay(50);
+    198              
+    199              
+    200              
+    201              //读取摄像头芯片的ID号
+    202              if(SCCBReadByte(&SensorID, 1, OV7725_VER) == 0)
+    203              {
+    204                  uart_sendN(UART0, (uint8 *)"\nCamera Registers ReadID Failed!", 32);
+    205                  return 0;
+    206              }
+    207              
+    208              Send_Tmp[0] = SensorID;
+    209              
+    210              //获取摄像头芯片ID号成功
+    211              uart_sendN(UART0, (uint8 *)"\nCamera Registers ReadID Succeed: ", 34);
+    212              uart_send1(UART0, '\n');
+    213              uart_sendN(UART0, Send_Tmp, sizeof(Send_Tmp));
+    214              
+    215              
+    216              
+    217              //配置各个寄存器
+    218              if(SensorID == OV7725_ID) 
+    219              {
+    220                  for( i = 0 ; i < 49 ; i++ )
+    221                  {
+    222                      if( 0 == SCCBWriteByte(OV7725Regs[i].addr, OV7725Regs[i].val) )
+    223                      {
+    224                          uart_sendN(UART0, (uint8 *)"\nCamera Writing a Reg Failed!", 29);
+    225                          return 0;
+    226                      }
+    227                  }
+    228              }
+    229              else
+    230              {
+    231                  uart_sendN(UART0, (uint8 *)"\nSensor ID Unmatch!", 19);
+    232                  return 0;
+    233              }
+    234              
+    235              //配置Camera各寄存器均成功
+    236              uart_sendN(UART0, (uint8 *)"\nCamera Registers Initial Finally Succeed!", 42);
+    237              return 1;
+    238          }
+    239          
+    240          */
+    241          
+    242          
+    243          
+    244          //OV7620摄像头寄存器初始化 成功返回1 失败返回0
+
+   \                                 In section .text, align 2, keep-with-next
+    245          uint8 CameraRegInit(void)
+    246          {
+   \                     CameraRegInit: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+    247              //uint8 i;
+    248              //uint8 SensorID = 1;
+    249              //uint8 Send_Tmp[1] = {"1"};
+    250              
+    251              //SCCB信号引脚配置
+    252              SCCBPortInit();
+   \   00000002   0x.... 0x....      BL       SCCBPortInit
+    253          
+    254              //复位摄像头所有寄存器
+    255              if(SCCBWriteByte(OV7620_COMCTRLA, 0x80) == 0)
+   \   00000006   0x2180             MOVS     R1,#+128
+   \   00000008   0x2012             MOVS     R0,#+18
+   \   0000000A   0x.... 0x....      BL       SCCBWriteByte
+   \   0000000E   0x2800             CMP      R0,#+0
+   \   00000010   0xD106             BNE.N    ??CameraRegInit_0
+    256              {
+    257                  uart_sendN(UART0, (uint8 *)"\nCamera Registers Reset Failed!", 31);
+   \   00000012   0x221F             MOVS     R2,#+31
+   \   00000014   0x....             LDR.N    R1,??DataTable2_5
+   \   00000016   0x....             LDR.N    R0,??DataTable2_6  ;; 0x4006a000
+   \   00000018   0x.... 0x....      BL       uart_sendN
+    258                  return 0;
+   \   0000001C   0x2000             MOVS     R0,#+0
+   \   0000001E   0xE015             B.N      ??CameraRegInit_1
+    259              }
+    260              
+    261              //延时
+    262              CameraDelay(50);    
+   \                     ??CameraRegInit_0: (+1)
+   \   00000020   0x2032             MOVS     R0,#+50
+   \   00000022   0x.... 0x....      BL       CameraDelay
+    263              
+    264              //PCLK四分频，HSYNC无效，CHSYNC无效，VSYNC有效边沿。
+    265              //PCLK:166ns   HREF:254.6us   VSYN:133.6ms
+    266              /*
+    267              if( 0 == SCCBWriteByte(OV7620_CLKCTRL,0x00))
+    268              {
+    269                  uart_sendN(UART0, (uint8 *)"\nCamera Writing OV7620_CLKCTRL Failed!", 38);
+    270                  return 0;
+    271              }
+    272              */
+    273              /*
+    274              if( 0 == SCCBWriteByte(OV7620_HS,0x3F))
+    275              {
+    276                  uart_sendN(UART0, (uint8 *)"\nCamera Writing OV7620_COMCTRLC Failed!", 39);
+    277                  return 0;
+    278              }
+    279              
+    280              if( 0 == SCCBWriteByte(OV7620_HE,0xBF))
+    281              {
+    282                  uart_sendN(UART0, (uint8 *)"\nCamera Writing OV7620_COMCTRLC Failed!", 39);
+    283                  return 0;
+    284              }    
+    285              */
+    286              //AWB激活阈值选择为 低， QVGA输出选择320*240，VSYNC在奇偶场均输出，HREF正极性，RGB伽马校正开启。
+    287              //PCLK:332ns   HREF:509.6us   VSYN:133.6ms
+    288              if( 0 == SCCBWriteByte(OV7620_COMCTRLC,0x24))
+   \   00000026   0x2124             MOVS     R1,#+36
+   \   00000028   0x2014             MOVS     R0,#+20
+   \   0000002A   0x.... 0x....      BL       SCCBWriteByte
+   \   0000002E   0x2800             CMP      R0,#+0
+   \   00000030   0xD106             BNE.N    ??CameraRegInit_2
+    289              {
+    290                  uart_sendN(UART0, (uint8 *)"\nCamera Writing OV7620_COMCTRLC Failed!", 39);
+   \   00000032   0x2227             MOVS     R2,#+39
+   \   00000034   0x....             LDR.N    R1,??DataTable2_7
+   \   00000036   0x....             LDR.N    R0,??DataTable2_6  ;; 0x4006a000
+   \   00000038   0x.... 0x....      BL       uart_sendN
+    291                  return 0;
+   \   0000003C   0x2000             MOVS     R0,#+0
+   \   0000003E   0xE005             B.N      ??CameraRegInit_1
+    292              }
+    293              
+    294              /*
+    295              //连续采集模式(320*240)
+    296              //PCLK:666ns   HREF:509.6us   VSYN:133.6ms
+    297              if( 0 == SCCBWriteByte(OV7620_COMCTRLH,0x00))
+    298              {
+    299                  uart_sendN(UART0, (uint8 *)"\nCamera Writing OV7620_COMCTRLH Failed!", 39);
+    300                  return 0;
+    301              }
+    302              */
+    303          
+    304              
+    305              //配置Camera各寄存器均成功
+    306              uart_sendN(UART0, (uint8 *)"\nCamera Registers Initial Finally Succeed12!", 42);
+   \                     ??CameraRegInit_2: (+1)
+   \   00000040   0x222A             MOVS     R2,#+42
+   \   00000042   0x....             LDR.N    R1,??DataTable2_8
+   \   00000044   0x....             LDR.N    R0,??DataTable2_6  ;; 0x4006a000
+   \   00000046   0x.... 0x....      BL       uart_sendN
+    307              return 1;
+   \   0000004A   0x2001             MOVS     R0,#+1
+   \                     ??CameraRegInit_1: (+1)
+   \   0000004C   0xBD02             POP      {R1,PC}          ;; return
+    308          }
+    309          
+    310          
+    311          
+    312          
+    313          
+    314          //摄像头初始化函数 成功返回1 失败返回0
+
+   \                                 In section .text, align 2, keep-with-next
+    315          uint8 CameraInit(void)
+    316          {
+   \                     CameraInit: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+    317            
+    318              if(!CameraRegInit()) return 0; //摄像头寄存器初始化若失败，直接返回0
+   \   00000002   0x.... 0x....      BL       CameraRegInit
+   \   00000006   0x2800             CMP      R0,#+0
+   \   00000008   0xD101             BNE.N    ??CameraInit_0
+   \   0000000A   0x2000             MOVS     R0,#+0
+   \   0000000C   0xE002             B.N      ??CameraInit_1
+    319              CameraPortInit();              //摄像头所需端口配置
+   \                     ??CameraInit_0: (+1)
+   \   0000000E   0x.... 0x....      BL       CameraPortInit
+    320              return 1;
+   \   00000012   0x2001             MOVS     R0,#+1
+   \                     ??CameraInit_1: (+1)
+   \   00000014   0xBD02             POP      {R1,PC}          ;; return
+    321          }
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2:
+   \   00000000   0x........         DC32     ?_0
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_1:
+   \   00000000   0x4004A000         DC32     0x4004a000
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_2:
+   \   00000000   0x4004C004         DC32     0x4004c004
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_3:
+   \   00000000   0x4004B020         DC32     0x4004b020
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_4:
+   \   00000000   0x4004A024         DC32     0x4004a024
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_5:
+   \   00000000   0x........         DC32     ?_1
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_6:
+   \   00000000   0x4006A000         DC32     0x4006a000
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_7:
+   \   00000000   0x........         DC32     ?_2
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_8:
+   \   00000000   0x........         DC32     ?_3
+
+   \                                 In section .rodata, align 4
+   \                     ?_0:
+   \   00000000   0x00 0x01          DC8 0, 1, 2, 3, 4, 5, 6, 7
+   \              0x02 0x03    
+   \              0x04 0x05    
+   \              0x06 0x07    
+
+   \                                 In section .rodata, align 4
+   \                     ?_1:
+   \   00000000   0x0A 0x43          DC8 "\012Camera Registers Reset Failed!"
+   \              0x61 0x6D    
+   \              0x65 0x72    
+   \              0x61 0x20    
+   \              0x52 0x65    
+   \              0x67 0x69    
+   \              0x73 0x74    
+   \              0x65 0x72    
+   \              0x73 0x20    
+   \              0x52 0x65    
+   \              0x73 0x65    
+   \              0x74 0x20    
+   \              0x46 0x61    
+   \              0x69 0x6C    
+   \              0x65 0x64    
+   \              0x21 0x00    
+
+   \                                 In section .rodata, align 4
+   \                     ?_2:
+   \   00000000   0x0A 0x43          DC8 "\012Camera Writing OV7620_COMCTRLC Failed!"
+   \              0x61 0x6D    
+   \              0x65 0x72    
+   \              0x61 0x20    
+   \              0x57 0x72    
+   \              0x69 0x74    
+   \              0x69 0x6E    
+   \              0x67 0x20    
+   \              0x4F 0x56    
+   \              0x37 0x36    
+   \              0x32 0x30    
+   \              0x5F 0x43    
+   \              0x4F 0x4D    
+   \              0x43 0x54    
+   \              0x52 0x4C    
+   \              0x43 0x20    
+   \              0x46 0x61    
+   \              0x69 0x6C    
+   \              0x65 0x64    
+   \              0x21 0x00    
+
+   \                                 In section .rodata, align 4
+   \                     ?_3:
+   \   00000000   0x0A 0x43          DC8 "\012Camera Registers Initial Finally Succeed12!"
+   \              0x61 0x6D    
+   \              0x65 0x72    
+   \              0x61 0x20    
+   \              0x52 0x65    
+   \              0x67 0x69    
+   \              0x73 0x74    
+   \              0x65 0x72    
+   \              0x73 0x20    
+   \              0x49 0x6E    
+   \              0x69 0x74    
+   \              0x69 0x61    
+   \              0x6C 0x20    
+   \              0x46 0x69    
+   \              0x6E 0x61    
+   \              0x6C 0x6C    
+   \              0x79 0x20    
+   \              0x53 0x75    
+   \              0x63 0x63    
+   \              0x65 0x65    
+   \              0x64 0x31    
+   \              0x32 0x21    
+   \              0x00         
+   \   0000002D   0x00 0x00          DC8 0, 0, 0
+   \              0x00         
+    322          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       4   CameraDelay
+       8   CameraInit
+         8   -> CameraPortInit
+         8   -> CameraRegInit
+       8   CameraPortInit
+       8   CameraRegInit
+         8   -> CameraDelay
+         8   -> SCCBPortInit
+         8   -> SCCBWriteByte
+         8   -> uart_sendN
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable2
+       4  ??DataTable2_1
+       4  ??DataTable2_2
+       4  ??DataTable2_3
+       4  ??DataTable2_4
+       4  ??DataTable2_5
+       4  ??DataTable2_6
+       4  ??DataTable2_7
+       4  ??DataTable2_8
+       8  ?_0
+      32  ?_1
+      40  ?_2
+      48  ?_3
+      34  CameraDelay
+      22  CameraInit
+     128  CameraPortInit
+      78  CameraRegInit
+       1  ImgStatus
+   19200  ImgStore1
+   19200  ImgStore2
+       4  OV7620Regs
+     100  OV7725Regs
+
+ 
+ 38 400 bytes in section .bss
+    105 bytes in section .data
+    128 bytes in section .rodata
+    298 bytes in section .text
+ 
+    298 bytes of CODE  memory
+    128 bytes of CONST memory
+ 38 505 bytes of DATA  memory
+
+Errors: none
+Warnings: 1

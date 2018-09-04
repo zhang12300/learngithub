@@ -1,0 +1,143 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.20.5.7591/W32 for ARM        06/Feb/2018  21:44:12
+# Copyright 1999-2014 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        D:\智能车\程序\下位机程序_摄像头1队\src\Sources\C\Function_C\BatteryCheck.c
+#    Command line =  
+#        D:\智能车\程序\下位机程序_摄像头1队\src\Sources\C\Function_C\BatteryCheck.c
+#        -D IAR -D TWR_K60N512 -lCN
+#        D:\智能车\程序\下位机程序_摄像头1队\FLASH\List\ -lB
+#        D:\智能车\程序\下位机程序_摄像头1队\FLASH\List\ -o
+#        D:\智能车\程序\下位机程序_摄像头1队\FLASH\Obj\ --no_cse --no_unroll
+#        --no_inline --no_code_motion --no_tbaa --no_clustering --no_scheduling
+#        --debug --endian=little --cpu=Cortex-M4 -e --fpu=None --dlib_config
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        7.0\arm\INC\c\DLib_Config_Normal.h" -I
+#        D:\智能车\程序\下位机程序_摄像头1队\src\Sources\H\ -I
+#        D:\智能车\程序\下位机程序_摄像头1队\src\Sources\H\Component_H\ -I
+#        D:\智能车\程序\下位机程序_摄像头1队\src\Sources\H\Frame_H\ -I
+#        D:\智能车\程序\下位机程序_摄像头1队\src\Sources\H\Function_H\ -I
+#        D:\智能车\程序\下位机程序_摄像头1队\src\Sources\H\SD_H\ -Ol
+#        --use_c++_inline
+#    List file    =  
+#        D:\智能车\程序\下位机程序_摄像头1队\FLASH\List\BatteryCheck.lst
+#    Object file  =  
+#        D:\智能车\程序\下位机程序_摄像头1队\FLASH\Obj\BatteryCheck.o
+#
+###############################################################################
+
+D:\智能车\程序\下位机程序_摄像头1队\src\Sources\C\Function_C\BatteryCheck.c
+      1          /******************************************************************************/
+      2          /*******************************************************************************
+      3            文件名：电池检查BatteryCheck.c
+      4            功  能：电池电压检测
+      5            日  期：2015.07.14
+      6            作  者：HJZ
+      7            备  注：
+      8          *******************************************************************************/
+      9          /******************************************************************************/
+     10          
+     11          #include "BatteryCheck.h"
+     12          
+
+   \                                 In section .bss, align 2
+     13          uint16 BatteryCheckVal;   //电池电压AD采样值
+   \                     BatteryCheckVal:
+   \   00000000                      DS8 2
+     14          
+     15          //电池电压检测初始化
+     16          //准备用一次函数来拟合。电池电压首先要看运动过程中是否平稳，其次要看最低值是否低于危险值。
+
+   \                                 In section .text, align 2, keep-with-next
+     17          uint8 BatteryCheckInit(void)
+     18          {
+     19            //ADC0_SE18   <->   PTE25
+     20            PORT_PCR_REG(PORTE_BASE_PTR, 25) |= (0|PORT_PCR_MUX(0));
+   \                     BatteryCheckInit: (+1)
+   \   00000000   0x....             LDR.N    R0,??DataTable1  ;; 0x4004d064
+   \   00000002   0x6800             LDR      R0,[R0, #+0]
+   \   00000004   0x....             LDR.N    R1,??DataTable1  ;; 0x4004d064
+   \   00000006   0x6008             STR      R0,[R1, #+0]
+     21            
+     22            return 1;
+   \   00000008   0x2001             MOVS     R0,#+1
+   \   0000000A   0x4770             BX       LR               ;; return
+     23          }
+     24          
+     25          
+     26          //电池电压测量值更新
+     27          //准备用一次函数来拟合。电池电压首先要看运动过程中是否平稳，其次要看最低值是否低于危险值。
+
+   \                                 In section .text, align 2, keep-with-next
+     28          uint8 BatteryCheckUpdate(void)
+     29          {
+   \                     BatteryCheckUpdate: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     30            BatteryCheckVal = hw_ad_mid(0, 18, 16);
+   \   00000002   0x2210             MOVS     R2,#+16
+   \   00000004   0x2112             MOVS     R1,#+18
+   \   00000006   0x2000             MOVS     R0,#+0
+   \   00000008   0x.... 0x....      BL       hw_ad_mid
+   \   0000000C   0x....             LDR.N    R1,??DataTable1_1
+   \   0000000E   0x8008             STRH     R0,[R1, #+0]
+     31            
+     32            BatteryCheckVal = 0 - BatteryCheckVal;
+   \   00000010   0x....             LDR.N    R0,??DataTable1_1
+   \   00000012   0x8800             LDRH     R0,[R0, #+0]
+   \   00000014   0x4240             RSBS     R0,R0,#+0
+   \   00000016   0x....             LDR.N    R1,??DataTable1_1
+   \   00000018   0x8008             STRH     R0,[R1, #+0]
+     33            
+     34            BatteryCheckVal = BatteryCheckVal / 1000;
+   \   0000001A   0x....             LDR.N    R0,??DataTable1_1
+   \   0000001C   0x8800             LDRH     R0,[R0, #+0]
+   \   0000001E   0xF44F 0x717A      MOV      R1,#+1000
+   \   00000022   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   00000026   0x....             LDR.N    R1,??DataTable1_1
+   \   00000028   0x8008             STRH     R0,[R1, #+0]
+     35            
+     36            return 1;
+   \   0000002A   0x2001             MOVS     R0,#+1
+   \   0000002C   0xBD02             POP      {R1,PC}          ;; return
+     37          }
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable1:
+   \   00000000   0x4004D064         DC32     0x4004d064
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable1_1:
+   \   00000000   0x........         DC32     BatteryCheckVal
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       0   BatteryCheckInit
+       8   BatteryCheckUpdate
+         8   -> hw_ad_mid
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable1
+       4  ??DataTable1_1
+      12  BatteryCheckInit
+      46  BatteryCheckUpdate
+       2  BatteryCheckVal
+
+ 
+  2 bytes in section .bss
+ 66 bytes in section .text
+ 
+ 66 bytes of CODE memory
+  2 bytes of DATA memory
+
+Errors: none
+Warnings: none

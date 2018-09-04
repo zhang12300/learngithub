@@ -1,0 +1,278 @@
+<?xml version="1.0"?>
+<settings>
+    <DebugChecksum>
+        <Checksum>-568859947</Checksum>
+    </DebugChecksum>
+    <Stack>
+        <FillEnabled>0</FillEnabled>
+        <OverflowWarningsEnabled>1</OverflowWarningsEnabled>
+        <WarningThreshold>90</WarningThreshold>
+        <SpWarningsEnabled>1</SpWarningsEnabled>
+        <WarnLogOnly>1</WarnLogOnly>
+        <UseTrigger>1</UseTrigger>
+        <TriggerName>main</TriggerName>
+        <LimitSize>0</LimitSize>
+        <ByteLimit>50</ByteLimit>
+    </Stack>
+    <Exceptions>
+        <StopOnUncaught>_ 0</StopOnUncaught>
+        <StopOnThrow>_ 0</StopOnThrow>
+    </Exceptions>
+    <CallStack>
+        <ShowArgs>0</ShowArgs>
+    </CallStack>
+    <Disassembly>
+        <MixedMode>1</MixedMode>
+    </Disassembly>
+    <JLinkDriver>
+        <TraceBufferSize>0x00010000</TraceBufferSize>
+        <TraceStallIfFIFOFull>0x00000000</TraceStallIfFIFOFull>
+        <TracePortSize>0x00000004</TracePortSize>
+        <CStepIntDis>_ 0</CStepIntDis>
+    </JLinkDriver>
+    <SWOTraceHWSettings>
+        <OverrideDefaultClocks>0</OverrideDefaultClocks>
+        <CpuClock>72000000</CpuClock>
+        <ClockAutoDetect>0</ClockAutoDetect>
+        <ClockWanted>2000000</ClockWanted>
+        <JtagSpeed>2250000</JtagSpeed>
+        <Prescaler>32</Prescaler>
+        <TimeStampPrescIndex>0</TimeStampPrescIndex>
+        <TimeStampPrescData>0</TimeStampPrescData>
+        <PcSampCYCTAP>1</PcSampCYCTAP>
+        <PcSampPOSTCNT>15</PcSampPOSTCNT>
+        <PcSampIndex>0</PcSampIndex>
+        <DataLogMode>0</DataLogMode>
+        <ITMportsEnable>0</ITMportsEnable>
+        <ITMportsTermIO>0</ITMportsTermIO>
+        <ITMportsLogFile>0</ITMportsLogFile>
+        <ITMlogFile>$PROJ_DIR$\ITM.log</ITMlogFile>
+    </SWOTraceHWSettings>
+    <Breakpoints>
+        <Count>0</Count>
+    </Breakpoints>
+    <MemoryMap>
+        <Enabled>0</Enabled>
+        <Base>0</Base>
+        <UseAuto>0</UseAuto>
+        <TypeViolation>1</TypeViolation>
+        <UnspecRange>1</UnspecRange>
+        <ActionState>1</ActionState>
+    </MemoryMap>
+    <TraceHelper>
+        <Enabled>0</Enabled>
+        <ShowSource>1</ShowSource>
+    </TraceHelper>
+    <CodeCoverage>
+        <Enabled>_ 0</Enabled>
+    </CodeCoverage>
+    <CallStackStripe>
+        <ShowTiming>1</ShowTiming>
+    </CallStackStripe>
+    <array_types>
+        <Fmt0>uint8[250]	3	0</Fmt0>
+        <Fmt1>uint8[3]	3	0</Fmt1>
+        <Fmt2>uint8[50]	3	0</Fmt2>
+        <Fmt3>unsigned char[60]	3	0</Fmt3>
+    </array_types>
+    <watch_formats>
+        <Fmt0>{W}0:BlackLeftLoc	3	2</Fmt0>
+        <Fmt1>{W}0:BlackLeftLoc[25][0]	3	0</Fmt1>
+        <Fmt2>{W}0:BlackLeftLoc[26][0]	3	0</Fmt2>
+        <Fmt3>{W}0:BlackRightLoc	3	2</Fmt3>
+        <Fmt4>{W}0:BlackRightLoc[25][0]	3	0</Fmt4>
+        <Fmt5>{W}0:BlackRightLoc[26][0]	3	0</Fmt5>
+        <Fmt6>{W}0:CenterLineLoc	3	2</Fmt6>
+        <Fmt7>{W}0:CenterLineLoc[25]	3	0</Fmt7>
+        <Fmt8>{W}0:DeviRowChosen	3	0</Fmt8>
+        <Fmt9>{W}0:LightHouseStateR0	4	0</Fmt9>
+        <Fmt10>{W}0:LightHouseStateR1	4	0</Fmt10>
+        <Fmt11>{W}0:Temp	4	0</Fmt11>
+        <Fmt12>{W}0:a8	3	0</Fmt12>
+        <Fmt13>{W}0:b8	3	0</Fmt13>
+        <Fmt14>{W}0:row	3	0</Fmt14>
+        <Fmt15>{W}0:tempGPIOE_PDIR	4	0</Fmt15>
+        <Fmt16>{W}1:BlackLeftLoc[row+1][0]	3	0</Fmt16>
+        <Fmt17>{W}1:BlackLeftLoc[row][0]	3	0</Fmt17>
+        <Fmt18>{W}1:BlackLeftLoc[row][1]	3	0</Fmt18>
+        <Fmt19>{W}1:BlackRightLoc[row][0]	3	0</Fmt19>
+        <Fmt20>{W}1:GPIOE_PDIR	1	0</Fmt20>
+        <Fmt21>{W}1:ImgNew	0	9</Fmt21>
+        <Fmt22>{W}1:ImgNew[row][col-10]	3	0</Fmt22>
+        <Fmt23>{W}1:ImgNew[row][col-11]	3	0</Fmt23>
+        <Fmt24>{W}1:ImgNew[row][col-12]	3	0</Fmt24>
+        <Fmt25>{W}1:ImgNew[row][col-13]	3	0</Fmt25>
+        <Fmt26>{W}1:ImgNew[row][col-14]	3	0</Fmt26>
+        <Fmt27>{W}1:ImgNew[row][col-15]	3	0</Fmt27>
+        <Fmt28>{W}1:ImgNew[row][col-16]	3	0</Fmt28>
+        <Fmt29>{W}1:ImgNew[row][col-17]	3	0</Fmt29>
+        <Fmt30>{W}1:ImgNew[row][col-18]	3	0</Fmt30>
+        <Fmt31>{W}1:ImgNew[row][col-19]	3	0</Fmt31>
+        <Fmt32>{W}1:ImgNew[row][col-20]	3	0</Fmt32>
+        <Fmt33>{W}1:ImgNew[row][col-4]	3	0</Fmt33>
+        <Fmt34>{W}1:ImgNew[row][col-5]	3	0</Fmt34>
+        <Fmt35>{W}1:ImgNew[row][col-6]	3	0</Fmt35>
+        <Fmt36>{W}1:ImgNew[row][col-7]	3	0</Fmt36>
+        <Fmt37>{W}1:ImgNew[row][col-8]	3	0</Fmt37>
+        <Fmt38>{W}1:ImgNew[row][col-9]	3	0</Fmt38>
+        <Fmt39>{W}1:ImgNew[row][col]	3	0</Fmt39>
+        <Fmt40>{W}1:LimitLeftB	3	0</Fmt40>
+        <Fmt41>{W}1:LimitLeftW	3	0</Fmt41>
+        <Fmt42>{W}1:LimitLeftWB	3	0</Fmt42>
+        <Fmt43>{W}1:LimitLeftWBAdjust[row]	3	0</Fmt43>
+        <Fmt44>{W}1:abs1	3	0</Fmt44>
+        <Fmt45>{W}1:col	3	0</Fmt45>
+        <Fmt46>{W}1:leftCount	3	0</Fmt46>
+        <Fmt47>{W}1:rightCount	3	0</Fmt47>
+        <Fmt48>{W}1:row	3	0</Fmt48>
+        <Fmt49>{W}1:stopLineLeft	3	0</Fmt49>
+        <Fmt50>{W}1:stopLineRight	3	0</Fmt50>
+    </watch_formats>
+    <SWOTraceWindow>
+        <PcSampling>0</PcSampling>
+        <InterruptLogs>0</InterruptLogs>
+        <ForcedTimeStamps>0</ForcedTimeStamps>
+        <EventCPI>0</EventCPI>
+        <EventEXC>0</EventEXC>
+        <EventFOLD>0</EventFOLD>
+        <EventLSU>0</EventLSU>
+        <EventSLEEP>0</EventSLEEP>
+    </SWOTraceWindow>
+    <PowerLog>
+        <LogEnabled>0</LogEnabled>
+        <GraphEnabled>0</GraphEnabled>
+        <ShowTimeLog>1</ShowTimeLog>
+        <ShowTimeSum>0</ShowTimeSum>
+        <Title_0>I0</Title_0>
+        <Symbol_0>0 4 0</Symbol_0>
+        <LiveEnabled>0</LiveEnabled>
+        <LiveFile>PowerLogLive.log</LiveFile>
+    </PowerLog>
+    <EventLog>
+        <LogEnabled>0</LogEnabled>
+        <SumEnabled>0</SumEnabled>
+        <GraphEnabled>0</GraphEnabled>
+        <ShowTimeLog>1</ShowTimeLog>
+        <ShowTimeSum>1</ShowTimeSum>
+        <Title_0>Ch3</Title_0>
+        <Symbol_0>0 4 1</Symbol_0>
+        <Title_1>Ch2</Title_1>
+        <Symbol_1>0 4 1</Symbol_1>
+        <Title_2>Ch1</Title_2>
+        <Symbol_2>0 4 1</Symbol_2>
+        <Title_3>Ch0</Title_3>
+        <Symbol_3>0 4 1</Symbol_3>
+        <SumSortOrder>0</SumSortOrder>
+    </EventLog>
+    <Log_file>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+        <Category>_ 0</Category>
+    </Log_file>
+    <TermIOLog>
+        <LoggingEnabled>_ 0</LoggingEnabled>
+        <LogFile>_ ""</LogFile>
+    </TermIOLog>
+    <CallStackLog>
+        <Enabled>0</Enabled>
+    </CallStackLog>
+    <PowerProbe>
+        <Frequency>10000</Frequency>
+        <Probe0>I0</Probe0>
+        <ProbeSetup0>2 1 1 2 0 0</ProbeSetup0>
+    </PowerProbe>
+    <DriverProfiling>
+        <Enabled>0</Enabled>
+        <Mode>1</Mode>
+        <Graph>0</Graph>
+        <Symbiont>0</Symbiont>
+        <Exclusions />
+    </DriverProfiling>
+    <Disassemble_mode>
+        <mode>0</mode>
+    </Disassemble_mode>
+    <Trace1>
+        <Enabled>0</Enabled>
+        <ShowSource>1</ShowSource>
+    </Trace1>
+    <InterruptLog>
+        <LogEnabled>0</LogEnabled>
+        <GraphEnabled>0</GraphEnabled>
+        <ShowTimeLog>1</ShowTimeLog>
+        <SumEnabled>0</SumEnabled>
+        <ShowTimeSum>1</ShowTimeSum>
+        <SumSortOrder>0</SumSortOrder>
+    </InterruptLog>
+    <DataLog>
+        <LogEnabled>0</LogEnabled>
+        <GraphEnabled>0</GraphEnabled>
+        <ShowTimeLog>1</ShowTimeLog>
+        <SumEnabled>0</SumEnabled>
+        <ShowTimeSum>1</ShowTimeSum>
+    </DataLog>
+    <DisassembleMode>
+        <mode>0</mode>
+    </DisassembleMode>
+    <Breakpoints2>
+        <Count>0</Count>
+    </Breakpoints2>
+    <Interrupts>
+        <Enabled>1</Enabled>
+    </Interrupts>
+    <MemConfig>
+        <Base>1</Base>
+        <Manual>0</Manual>
+        <Ddf>1</Ddf>
+        <TypeViol>0</TypeViol>
+        <Stop>1</Stop>
+    </MemConfig>
+    <Aliases>
+        <A0>_ "C:\Users\admin\Desktop\下位机程序_摄像头1队2月7日\下位机程序_摄像头1队2月7日\src\Sources\C\Function_C\VirtualScope.c" ""</A0>
+        <A1>_ "D:\IAR_TEST\Sirius\Sirius V1.1\src\Project_Settings\Startup_Code\crt0.s" ""</A1>
+        <A2>_ "D:\IAR_TEST\Sirius\Sirius V2.1 2014.11.13\Sirius V2.1\src\Sources\C\Component_C\uart.c" ""</A2>
+        <A3>_ "D:\IAR_TEST\Sirius\Sirius V2.2 NoMotor OKServo OKControl No4\Sirius V2.2\src\Sources\C\Function_C\ImagePro.c" ""</A3>
+        <A4>_ "D:\IAR_TEST\Sirius\Sirius V2.3.5  66ms\src\Sources\C\Function_C\ImagePro.c" ""</A4>
+        <A5>_ "D:\IAR_TEST\Sirius\Sirius V2.7\src\Sources\C\Function_C\Ftm.c" ""</A5>
+        <A6>_ "D:\IAR_TEST\Sirius\Sirius V2.9 2015.03.03.002\Sirius V2.9\src\Sources\C\Function_C\ImagePro.c" ""</A6>
+        <A7>_ "D:\IAR_TEST\Sirius\Sirius V3.0\src\Sources\C\Function_C\ImagePro.c" ""</A7>
+        <A8>_ "D:\IAR_TEST\Sirius\Sirius V3.2 NewSirius 2015.04.03.001\Sirius V3.2 NewSirius 2015.03.31.002\Sirius V3.2 NewSirius\src\Sources\C\Function_C\ImagePro.c" ""</A8>
+        <A9>_ "D:\IAR_TEST\Sirius\Sirius V3.2\src\Sources\C\Function_C\ImagePro.c" ""</A9>
+        <A10>_ "D:\IAR_TEST\Sirius\Sirius V3.3 2015.04.17.001\Sirius V3.3\src\Sources\C\Function_C\ImagePro.c" ""</A10>
+        <A11>_ "D:\IAR_TEST\Sirius\Sirius V3.3 2015.04.17.002\Sirius V3.3\src\Sources\C\Function_C\ImagePro.c" ""</A11>
+        <A12>_ "D:\IAR_TEST\Sirius\Sirius V3.3 2015.04.17.004\Sirius V3.3\src\Sources\C\Function_C\ImagePro.c" ""</A12>
+        <A13>_ "D:\IAR_TEST\Sirius\Sirius V3.3 2015.04.18.001\Sirius V3.3\src\Sources\C\isr.c" ""</A13>
+        <A14>_ "D:\IAR_TEST\Sirius\Sirius V3.3 2015.04.23.001\Sirius V3.3\src\Sources\C\Function_C\ImagePro.c" ""</A14>
+        <A15>_ "D:\IAR_TEST\Sirius\Sirius V3.5 2015.05.10.001\Sirius V3.5\src\Sources\C\Function_C\ImagePro.c" ""</A15>
+        <A16>_ "D:\IAR_TEST\Sirius\Sirius V3.6 2015.05.21.003\Sirius V3.6\src\Sources\C\Function_C\ImagePro.c" ""</A16>
+        <A17>_ "D:\IAR_TEST\Sirius\Sirius V3.6 2015.05.21.003\Sirius V3.6\src\Sources\C\isr.c" ""</A17>
+        <A18>_ "D:\IAR_TEST\Sirius\Sirius V3.6 2015.05.21.006\Sirius V3.6\src\Sources\C\Function_C\ImagePro.c" ""</A18>
+        <A19>_ "D:\IAR_TEST\Sirius\Sirius V3.7 2015.06.17.002\Sirius V3.7\src\Sources\C\Function_C\ImagePro.c" ""</A19>
+        <A20>_ "D:\IAR_TEST\Sirius\Sirius V3.8 2015.07.14.001\Sirius V3.7\src\Sources\C\Function_C\ImagePro.c" ""</A20>
+        <A21>_ "D:\IAR_TEST\Sirius\Sirius V3.8 2015.07.15.001\Sirius V3.7\src\Sources\C\Function_C\ImagePro.c" ""</A21>
+        <A22>_ "D:\IAR_TEST\Sirius\Sirius V3.8 2015.07.16.002\Sirius V3.7\src\Sources\C\Function_C\ImagePro.c" ""</A22>
+        <A23>_ "D:\IAR_TEST\Sirius\Sirius V3.8 2015.07.18.001\Sirius V3.7\src\Sources\C\Function_C\ImagePro.c" ""</A23>
+        <A24>_ "D:\IAR_TEST\Sirius\Sirius V3.9 2015.07.21.002\Sirius V3.9\src\Sources\C\Function_C\ImagePro.c" ""</A24>
+        <A25>_ "D:\大三春夏学期\智能车\下位机程序_摄像头1队3月3日\下位机程序_摄像头1队3月3日\下位机程序_摄像头1队2月7日\src\Sources\C\Function_C\VirtualScope.c" ""</A25>
+        <A26>_ "D:\我的文档\Desktop\AE\AE15\src\Sources\C\Function_C\ImagePro.c" ""</A26>
+        <A27>_ "D:\智能车\3.7\下位机程序_摄像头1队3月7日\src\Sources\C\Function_C\VirtualScope.c" ""</A27>
+        <A28>_ "D:\智能车\程序\下位机程序_摄像头1队3月6日\src\Sources\C\Function_C\VirtualScope.c" ""</A28>
+        <A29>_ "E:\Project\15_K60\03_Software\02_My program\K60_IAR\02_uart_loop\src\Project_Settings\Startup_Code\crt0.s" ""</A29>
+        <A30>_ "E:\杨超然\学习\智能车\侯哥程序\Sirius V3.3 2015.04.05.005\Sirius V3.3\src\Sources\C\Function_C\ImagePro.c" ""</A30>
+        <A31>_ "E:\杨超然\学习\智能车\侯哥程序\Sirius V3.3 2015.04.16.002\Sirius V3.3\src\Sources\C\Function_C\ImagePro.c" ""</A31>
+        <A32>_ "E:\杨超然\学习\智能车\侯哥程序\Sirius V3.3 2015.04.17.003\Sirius V3.3\src\Sources\C\Function_C\ImagePro.c" ""</A32>
+        <A33>_ "E:\杨超然\学习\智能车\侯哥程序\Sirius V3.5 2015.05.12.002\Sirius V3.5\src\Sources\C\Function_C\Ftm.c" ""</A33>
+        <A34>_ "E:\杨超然\学习\智能车\侯哥程序\Sirius V3.6 2015.05.20.001\Sirius V3.6\src\Sources\C\Function_C\ImagePro.c" ""</A34>
+        <A35>_ "E:\杨超然\学习\智能车\侯哥程序\Sirius V3.6 2015.05.21.004\Sirius V3.6\src\Sources\C\Function_C\ImagePro.c" ""</A35>
+        <A36>_ "E:\杨超然\学习\智能车\侯哥程序\Sirius V3.7 2015.06.10.002\Sirius V3.7\src\Sources\C\Function_C\ImagePro.c" ""</A36>
+        <A37>_ "E:\杨超然\学习\智能车\侯哥程序\Sirius V3.7 2015.06.12.002\Sirius V3.7 2015.06.12.002\Sirius V3.7\src\Sources\C\Function_C\ImagePro.c" ""</A37>
+        <A38>_ "E:\杨超然\学习\智能车\侯哥程序\Sirius V3.7 2015.06.16.003\Sirius V3.7\src\Sources\C\Function_C\ImagePro.c" ""</A38>
+        <A39>_ "E:\杨超然\学习\智能车\侯哥程序\Sirius V3.7 2015.06.17.003\Sirius V3.7\src\Sources\C\Function_C\ImagePro.c" ""</A39>
+        <Count>40</Count>
+        <SuppressDialog>1</SuppressDialog>
+    </Aliases>
+    <Simulator>
+        <Freq>10000000</Freq>
+        <FreqHi>0</FreqHi>
+        <MultiCoreRunAll>1</MultiCoreRunAll>
+    </Simulator>
+</settings>

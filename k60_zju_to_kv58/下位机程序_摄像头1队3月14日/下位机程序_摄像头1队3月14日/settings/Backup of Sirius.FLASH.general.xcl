@@ -1,0 +1,15 @@
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\arm\bin\armproc.dll" 
+
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\arm\bin\armsim2.dll" 
+
+"C:\Users\Lenovo\Desktop\class3\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\bin\Flash\Exe\Backup of Sirius.out" 
+
+--plugin="C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\arm\bin\armbat.dll" 
+
+--device_macro="C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\arm\config\debugger\NXP\Kxx.dmac" 
+
+--device_macro="C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\arm\config\debugger\NXP\Kxx_Trace.dmac" 
+
+
+
+
