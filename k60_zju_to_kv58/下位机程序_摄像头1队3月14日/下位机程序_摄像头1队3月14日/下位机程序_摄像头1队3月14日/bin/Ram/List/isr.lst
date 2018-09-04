@@ -1,0 +1,388 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.10.1.12857/W32 for ARM       01/Sep/2018  17:30:36
+# Copyright 1999-2017 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\C\isr.c
+#    Command line =  
+#        -f C:\Users\Lenovo\AppData\Local\Temp\EW632F.tmp
+#        (C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\C\isr.c
+#        -D IAR -D TWR_K60N512 --preprocess
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List
+#        -lCN
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List
+#        -lB
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List
+#        -o
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.0\arm\INC\c\DLib_Config_Full.h"
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\Component_H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\Frame_H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\Function_H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\SD_H\
+#        -I D:\quartus\quartus\cusp\80\synthinclude\ -Ol --use_c++_inline -I
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.0\arm\CMSIS\Include\" -D ARM_MATH_CM4)
+#    Locale       =  C
+#    List file    =  
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List\isr.lst
+#    Object file  =  
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\Obj\isr.o
+#
+###############################################################################
+
+C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\C\isr.c
+      1          //-------------------------------------------------------------------------*
+      2          // 文件名: isr.c                                                           *
+      3          // 说  明: 中断处理例程                                                    *
+      4          //---------------苏州大学飞思卡尔嵌入式系统实验室2011年--------------------*
+      5          
+      6          #include "includes.h"
+      7          #include "common.h"
+      8          #include "DMA.h"
+      9          #include "ImageGet.h"
+     10          #include "Pit.h"
+     11          #include "RunControl.h"
+     12          #include "Debug.h"
+     13          
+     14          uint32 ErrorCountNow9 = 0;
+     15          
+     16          uint8 QuadChangeFlag = 0;       //左右编码器切换标志位 
+     17          uint32 QuadLeftCount = 0;       //左编码器计数值，越大表示速度越快。
+     18          uint32 QuadRightCount = 0;      //右编码器计数值，越大表示速度越快。
+     19          uint8 PIT0Count = 0;            //PIT0计数值
+     20          
+     21          uint16 DiffCountL = 0;        //用于差速测量时，左轮脉冲数的总计数。
+     22          uint16 DiffCountR = 0;        //用于差速测量时，右轮脉冲数的总计数。
+     23          
+     24          uint8 PIT2_Isr_Change = 0;    //PIT2的功能复用选择。0表示用于发车时的5秒计数，1表示用于定时停车。
+     25          uint8 LightHouseWaitStartTooLongFlag = 0;   //灯塔等久标志位置位
+     26          volatile uint8 QuadDoneFlag = 0;         //编码器速度值采集完成标志，0未完成，1完成。
+     27          
+     28          //串口相关
+     29          uint8 ch0;
+     30          uint8 ch1;
+     31          uint8 ch2;
+     32          uint8 ch3;
+     33          uint8 ch4;
+     34          uint8 ch5;
+     35          uint8 ch6;
+     36          uint8 cnt = 0;
+     37          
+     38          //-------------------------------------------------------------------------*
+     39          //函数名: uart3_isr                                                        *
+     40          //功  能: 串口3数据接收中断例程                                            *
+     41          //说  明: 无                                                               *
+     42          //-------------------------------------------------------------------------*
+     43          void uart0_isr(void)
+     44          {
+     45              uint8 ch;
+     46              DisableInterrupts;		//关总中断
+     47              
+     48              if(cnt == 0){uart_re1 (UART0,&ch0);cnt++;}
+     49              if(cnt == 1){uart_re1 (UART0,&ch1);cnt++;}
+     50              if(cnt == 2){uart_re1 (UART0,&ch2);cnt++;}
+     51              if(cnt == 3){uart_re1 (UART0,&ch3);cnt++;}
+     52              if(cnt == 4){uart_re1 (UART0,&ch4);cnt++;}
+     53              if(cnt == 5){uart_re1 (UART0,&ch5);cnt++;}
+     54              if(cnt == 6)
+     55              {
+     56                  uart_re1 (UART0,&ch6);cnt=0;
+     57                  if(ch0==0xFF && ch1==0x55 && ch2==0xAA && ch3==0x77 && ch4==0x01 && ch5==0x06 && ch6==0x7C)
+     58                  {
+     59                      uart_sendN(UART0, (uint8 *)"\nCar Start!", 11);
+     60                      StopRealFlag = 0;
+     61                      light_control(PORTE, 26, Light_ON);
+     62                  }
+     63                  if(ch0==0xFF && ch1==0x55 && ch2==0xAA && ch3==0x77 && ch4==0x01 && ch5==0x07 && ch6==0x7D)
+     64                  {
+     65                      uart_sendN(UART0, (uint8 *)"\nCar Stop!", 10);
+     66                      StopRealFlag = 1;
+     67                      light_control(PORTE, 26, Light_OFF);
+     68                  }
+     69              }
+     70              
+     71          	EnableInterrupts;		//开总中断
+     72          }
+     73          
+     74          //------------------------------------------------------------------------------
+     75          //函数名：PIT0_Isr
+     76          //功  能：周期中断定时器PIT0中断服务函数
+     77          //参  数：无
+     78          //返  回：无
+     79          //说  明：
+     80              //暂定5ms进一次中断，进两次采集完两个编码器的值。
+     81              //图像采集完成后、图像处理前，开启这个中断，与图像处理并行。
+     82              //第2次进来时关掉这个中断。
+     83          //------------------------------------------------------------------------------
+     84          void PIT0_Isr(void)
+     85          {       
+     86              if((PIT_TFLG(0)&PIT_TFLG_TIF_MASK)!=0)
+     87              {
+     88                PIT_TFLG(0) |= PIT_TFLG_TIF_MASK;  //清中断标志
+     89              }
+     90              
+     91              //gpio_reverse(PORTE, 26);
+     92              
+     93              //计数值加1。
+     94              //PIT0Count++;
+     95              //编码器速度值采集完成标志，0未完成，1完成。
+     96              //QuadDoneFlag = 0;    
+     97              QuadLeftCount = FTM2_CNT;    //记录记数器的值。
+     98              FTM2_CNT = 0; 
+     99              
+    100              //禁止PIT。很关键的一步，使得下一次从头开始倒数。
+    101              PIT_TCTRL(PIT0) &= ~(PIT_TCTRL_TEN_MASK);       //禁止pit模块运行
+    102              //关掉中断。
+    103              disable_pit_interrupt(PIT0);
+    104              //编码器速度值采集完成标志，0未完成，1完成。
+    105              QuadDoneFlag = 1; 
+    106          }
+    107          /*
+    108          void PIT0_Isr(void)
+    109          {       
+    110              if((PIT_TFLG(0)&PIT_TFLG_TIF_MASK)!=0)
+    111              {
+    112                PIT_TFLG(0) |= PIT_TFLG_TIF_MASK;  //清中断标志
+    113              }
+    114              
+    115              //gpio_reverse(PORTE, 26);
+    116              
+    117              //计数值加1。
+    118              PIT0Count++;
+    119              //编码器速度值采集完成标志，0未完成，1完成。
+    120              QuadDoneFlag = 0;         
+    121          
+    122              if(QuadChangeFlag == 0)
+    123              {
+    124                QuadChangeFlag = 1;          //切换至右编码器的标志。
+    125                QuadLeftCount = FTM2_CNT;    //记录记数器的值。
+    126                
+    127                DiffCountL += QuadLeftCount;
+    128                
+    129                FTM2_CNT = 0;                //计数器清零。
+    130                //右路A相 A10, B相 A11。打开。
+    131                PORTA_PCR10 = PORT_PCR_MUX(6); // 设置引脚A10为FTM2_PHA功能  
+    132                PORTA_PCR11 = PORT_PCR_MUX(6); // 设置引脚A11为FTM2_PHB功能   
+    133                //左路A相 B18, B相 B19。置为无效复用。
+    134                PORTB_PCR18 = PORT_PCR_MUX(5); // 设置引脚B18为无效复用。
+    135                PORTB_PCR19 = PORT_PCR_MUX(5); // 设置引脚B19为无效复用。   
+    136              }
+    137              else
+    138              {
+    139                QuadChangeFlag = 0;          //切换至左编码器的标志。
+    140                QuadRightCount = FTM2_CNT;   //记录记数器的值。
+    141                
+    142                DiffCountR += QuadRightCount;
+    143                
+    144                FTM2_CNT = 0;                //计数器清零。
+    145                //左路A相 B18, B相 B19。打开。
+    146                PORTB_PCR18 = PORT_PCR_MUX(6); // 设置引脚B18为FTM2_PHA功能  
+    147                PORTB_PCR19 = PORT_PCR_MUX(6); // 设置引脚B19为FTM2_PHB功能   
+    148                //右路A相 A10, B相 A11。置为无效复用。
+    149                PORTA_PCR10 = PORT_PCR_MUX(5); // 设置引脚A10为无效复用。
+    150                PORTA_PCR11 = PORT_PCR_MUX(5); // 设置引脚A11为无效复用。 
+    151                
+    152                //禁止PIT。很关键的一步，使得下一次从头开始倒数。
+    153                PIT_TCTRL(PIT0) &= ~(PIT_TCTRL_TEN_MASK);       //禁止pit模块运行
+    154                //关掉中断。
+    155                disable_pit_interrupt(PIT0);
+    156                //编码器速度值采集完成标志，0未完成，1完成。
+    157                QuadDoneFlag = 1; 
+    158                
+    159                
+    160                
+    161              }
+    162              
+    163               
+    164          }
+    165          */
+    166          void PIT1_Isr(void)
+    167          {       
+    168              if((PIT_TFLG(1)&PIT_TFLG_TIF_MASK)!=0)
+    169              {
+    170                PIT_TFLG(1) |= PIT_TFLG_TIF_MASK;  //清中断标志
+    171              }
+    172              //FTM0_C7V = 0;
+    173              TimeOutFlag = 1;
+    174          }
+    175          //------------------------------------------------------------------------------
+    176          //函数名：PIT2_Isr
+    177          //功  能：周期中断定时器PIT2中断服务函数
+    178          //参  数：无
+    179          //返  回：无
+    180          //说  明：1. 用来定时跑车计数
+    181          //
+    182          //------------------------------------------------------------------------------
+    183          void PIT2_Isr(void)
+    184          {
+    185            if((PIT_TFLG(2)&PIT_TFLG_TIF_MASK)!=0)
+    186            {
+    187              PIT_TFLG(2) |= PIT_TFLG_TIF_MASK;  //清中断标志
+    188            }
+    189            
+    190            //第一种功能是灯塔发车的5秒计时。
+    191            if(PIT2_Isr_Change == 0)
+    192            {
+    193              //改用第二种功能。
+    194              PIT2_Isr_Change = 1;
+    195              
+    196              //灯塔等久标志位置位
+    197              LightHouseWaitStartTooLongFlag = 1;    
+    198              //进来一次后就不用再进来了。如果需要定时停车，需要重新给计数值后，再enable一次。
+    199              disable_pit_interrupt(PIT2);
+    200            }
+    201            //第二种功能是定时停车计时。
+    202            else
+    203            {
+    204              //定时跑标志置1。表示定时跑完成，应该马上停车。
+    205              TimeRealRunFlag = 1;
+    206              //进来一次后就不用再进来了。一辈子只进来一次。
+    207              disable_pit_interrupt(PIT2);
+    208            }
+    209            
+    210          
+    211            
+    212          }
+    213          
+    214          //DMA0传输结束函数，由PCLK触发，B9
+    215          //这些处理放在这里，而不是放在LineIsr的原因是LineIsr进入后要马上开始采数据，来不及
+    216          void DMA0_Isr(void)
+    217          {
+    218            
+    219              uint8 DMACHno = 0;
+    220            
+    221              ErrorCountNow9++;
+    222              
+    223              
+    224              DMA_INT |= (1 << DMACHno);    //清DMA0通道传输完成中断标志位
+    225              LineCount++;              //采集行计数值加1
+    226              
+    227              if(LineCount >= CameraHight)   //如果采集完成
+    228              {
+    229                  ImgStatus = ImgGetFinish;    //图像采集结束标志位
+    230                     
+    231                  if(ImgPresent == ImgNO1)  
+    232                  //如果当前采集的是第1幅图像，那么第1幅图像就采集完了，准备采集第2幅图像
+    233                  {
+    234                      ImgPresent = ImgNO2;  
+    235                  }
+    236                  else if(ImgPresent == ImgNO2)
+    237                  //如果当前采集的是第2幅图像，那么第2幅图像就采集完了，准备采集第1幅图像
+    238                  {
+    239                      ImgPresent = ImgNO1;
+    240                  }
+    241                  else
+    242                  {
+    243                      //uart_sendN(UART0, (uint8 *)"\nError In DMA0_Isr()!", 21);  //错误警告 
+    244                  }
+    245                          
+    246                  //disable_irq(FIELD_IRQ);   //场中断IRQ禁用，等待下一次ImgGet()函数再开启
+    247                  disable_irq(LINE_IRQ);    //行中断IRQ禁用
+    248                  enable_irq(DMA0_IRQ);    //DMA0的IRQ禁用   
+    249                   
+    250              }   
+    251              
+    252            /*
+    253              uint8 DMACHno = 0;
+    254              DMA_INT |= (1 << DMACHno);    //清DMA0通道传输完成中断标志位
+    255              LineCount++;              //采集行计数值加1
+    256              
+    257              if(LineCount >= CameraHight)   //如果采集完成
+    258              {
+    259                  ImgStatus = ImgGetFinish;    //图像采集结束标志位
+    260                  disable_irq(FIELD_IRQ);   //场中断IRQ禁用，等待下一次ImgGet()函数再开启
+    261                  disable_irq(LINE_IRQ);    //行中断IRQ禁用
+    262                  disable_irq(DMA0_IRQ);    //DMA0的IRQ禁用          
+    263              }
+    264              */
+    265          }
+    266           
+    267          
+    268          //PORTA中断服务函数
+    269          //这个的IRQ不会打开，正常情况不会进来。
+    270          void PORTA_Isr(void)  
+    271          {
+    272              PORTA_ISFR = ~0;
+    273              uart_sendN(UART0, (uint8 *)"\nError In PORTA_Isr()!", 22); //错误警告
+    274          }
+    275          
+    276          
+    277          //PORTB中断服务函数，含PCLK引发的DMA，B9
+    278          //这个的IRQ不会打开，正常情况不会进来。
+    279          void PORTB_Isr(void)  
+    280          {
+    281              PORTB_ISFR = ~0;
+    282              uart_sendN(UART0, (uint8 *)"\nError In PORTB_Isr()!", 22);  //错误警告
+    283          }
+    284          
+    285          
+    286          //PORTC中断服务函数，含行中断，C8
+    287          void PORTC_Isr(void)  
+    288          {
+    289              uint32 FlagTmp = PORTC_ISFR;  
+    290              PORTC_ISFR =  ~0;             //清除PORTC的所有中断标志位
+    291              
+    292              if(FlagTmp & (1 << PIN_LINE))   //如果确认是行中断的
+    293              {
+    294                  LineIsr();                    //进行中断处理函数
+    295              }
+    296          }
+    297          
+    298          
+    299          
+    300          //PORTD中断服务函数，含场中断，D1
+    301          void PORTD_Isr(void)  
+    302          {
+    303              uint32 FlagTmp = PORTD_ISFR;  
+    304              PORTD_ISFR =  ~0;             //清除PORTD的所有中断标志位
+    305              
+    306              if(FlagTmp & (1 << PIN_FIELD))   //如果确认是场中断的
+    307              {
+    308                  FieldIsr();                    //进场中断处理函数
+    309              }
+    310          
+    311          }
+    312          
+    313          
+    314          
+    315          //PORTE中断服务函数
+    316          //这个的IRQ不会打开，正常情况不会进来。
+    317          void PORTE_Isr(void)  
+    318          {
+    319              PORTE_ISFR = ~0;
+    320              uart_sendN(UART0, (uint8 *)"\nError In PORTE_Isr()!", 22);   //错误警告
+    321          }
+    322          
+    323          
+    324          
+    325            
+    326          
+    327          /*
+    328          void porta_isr(void)//场中断，A24，下降沿中断
+    329          {
+    330            
+    331          	PORTA_PCR24 |= PORT_PCR_ISF_MASK;//清除中断标志
+    332          	DMA0_Init();
+    333          	enable_irq(0);//使能DMA通道0完成中断
+    334          	row=0;//初始化行
+    335          	imagerow=0;//初始化采集行
+    336          	enable_irq (88);//使能B口中断 ，B10行中断
+    337          
+    338          }
+    339          */
+
+Errors: 1
+Warnings: 6

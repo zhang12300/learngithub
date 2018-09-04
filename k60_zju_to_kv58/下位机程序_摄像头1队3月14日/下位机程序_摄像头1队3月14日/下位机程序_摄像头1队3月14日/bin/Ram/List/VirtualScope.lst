@@ -1,0 +1,437 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.10.1.12857/W32 for ARM       01/Sep/2018  17:30:42
+# Copyright 1999-2017 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\C\Function_C\VirtualScope.c
+#    Command line =  
+#        -f C:\Users\Lenovo\AppData\Local\Temp\EW79FA.tmp
+#        (C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\C\Function_C\VirtualScope.c
+#        -D IAR -D TWR_K60N512 --preprocess
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List
+#        -lCN
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List
+#        -lB
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List
+#        -o
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.0\arm\INC\c\DLib_Config_Full.h"
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\Component_H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\Frame_H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\Function_H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\SD_H\
+#        -I D:\quartus\quartus\cusp\80\synthinclude\ -Ol --use_c++_inline -I
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.0\arm\CMSIS\Include\" -D ARM_MATH_CM4)
+#    Locale       =  C
+#    List file    =  
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List\VirtualScope.lst
+#    Object file  =  
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\Obj\VirtualScope.o
+#
+###############################################################################
+
+C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\C\Function_C\VirtualScope.c
+      1          /******************************************************************************/
+      2          /*******************************************************************************
+      3            文件名：虚拟示波器C文件VirtualScope.c
+      4            功  能：给虚拟示波器发送数据
+      5            日  期：2014.11.18
+      6            作  者：
+      7            备  注：
+      8          *******************************************************************************/
+      9          /******************************************************************************/
+     10          
+     11          #include "VirtualScope.h"
+     12          
+     13          int16 ErrorCountNow6 = 0;
+     14          
+     15          uint32 tic1;  //计时用起始数，记录定时器的值。
+     16          uint32 toc1;  //计时用终止数，记录定时器的值。
+     17          uint32 tic2;  //计时用起始数，记录定时器的值。
+     18          uint32 toc2;  //计时用终止数，记录定时器的值。
+     19          uint32 tic3;  //计时用起始数，记录定时器的值。
+     20          uint32 toc3;  //计时用终止数，记录定时器的值。
+     21          uint32 tic4;  //计时用起始数，记录定时器的值。
+     22          uint32 toc4;  //计时用终止数，记录定时器的值。
+     23          uint32 tic5;  //计时用起始数，记录定时器的值。
+     24          uint32 toc5;  //计时用终止数，记录定时器的值。
+     25          uint32 tic6;  //计时用起始数，记录定时器的值。
+     26          uint32 toc6;  //计时用终止数，记录定时器的值。
+     27          uint32 tic7;  //计时用起始数，记录定时器的值。
+     28          uint32 toc7;  //计时用终止数，记录定时器的值。
+     29          
+     30          
+     31          uint8 uSendBuf[UartDataNum*2]={0};
+     32          uint8 FreeCarsDataNum=UartDataNum*2;
+     33          
+     34          float VirtualOutData[4] = { 0 };
+     35          
+     36          unsigned short CRC_CHECK(unsigned char *Buf, unsigned char CRC_CNT)
+     37          {
+     38              unsigned short CRC_Temp;
+     39              unsigned char i,j;
+     40              CRC_Temp = 0xffff;
+     41          
+     42              for (i=0;i<CRC_CNT; i++){      
+     43                  CRC_Temp ^= Buf[i];
+     44                  for (j=0;j<8;j++) {
+     45                      if (CRC_Temp & 0x01)
+     46                          CRC_Temp = (CRC_Temp >>1 ) ^ 0xa001;
+     47                      else
+     48                          CRC_Temp = CRC_Temp >> 1;
+     49                  }
+     50              }
+     51              return(CRC_Temp);
+     52          }
+     53          
+     54          void VirtualOutPut_Data(void)
+     55          {
+     56            int temp[4] = {0};
+     57            unsigned int temp1[4] = {0};
+     58            unsigned char databuf[10] = {0};
+     59            unsigned char i;
+     60            unsigned short CRC16 = 0;
+     61            for(i=0;i<4;i++)
+     62             {
+     63              
+     64              temp[i]  = (int)VirtualOutData[i];
+     65              temp1[i] = (unsigned int)temp[i];
+     66              
+     67             }
+     68             
+     69            for(i=0;i<4;i++) 
+     70            {
+     71              databuf[i*2]   = (unsigned char)(temp1[i]%256);
+     72              databuf[i*2+1] = (unsigned char)(temp1[i]/256);
+     73            }
+     74            
+     75            CRC16 = CRC_CHECK(databuf,8);
+     76            databuf[8] = CRC16%256;
+     77            databuf[9] = CRC16/256;
+     78            
+     79            for(i=0;i<10;i++)
+     80            uart_send1(UART0,databuf[i]);
+     81          }
+     82          
+     83          void VirtualScopeSend(void)
+     84          {
+     85            float temp1;  
+     86            float temp2; 
+     87            float temp3;
+     88          
+     89            if(tic1 > toc1)
+     90            {
+     91              temp1 = (tic1 - toc1) / 75 ;
+     92            }
+     93            else
+     94            {
+     95              temp1 = 100;
+     96            }
+     97            
+     98            if(tic2 > toc2)
+     99            {
+    100              temp2 = (tic2 - toc2) / 75;
+    101            }
+    102            else
+    103            {
+    104              temp2 = 100;
+    105            }
+    106            
+    107            if(tic3 > toc3)
+    108            {
+    109              temp3 = (tic3 - toc3) / 75;
+    110            }
+    111            else
+    112            {
+    113              temp3 = 100;
+    114            }
+    115            
+    116            //ServoPercent = 
+    117            
+    118          /*
+    119            VirtualOutData[0] = PathType;                  //赛道类型 0未知 1直道 2左内 3左中 4左外 5右内 6右中 7右外
+    120            VirtualOutData[1] = CURVEL;                    //左黑线的曲率，因为基于的点数会变化，所以有可能变化很大。
+    121            VirtualOutData[2] = CURVEC;                    //中心线的曲率，因为基于的点数会变化，所以有可能变化很大。
+    122            VirtualOutData[3] = CURVER;                    //右黑线的曲率，因为基于的点数会变化，所以有可能变化很大。
+    123              */
+    124          /*
+    125            VirtualOutData[0] = DeviRowChosen;                   //偏差求取时，选中的行号。
+    126            VirtualOutData[1] = CenterLineLoc[DeviRowChosen];    //偏差求取时，选中的行号对应的中心线的值。
+    127            VirtualOutData[2] = BlackLeftLoc[DeviRowChosen][0];  //偏差求取时，选中的行号对应的左黑线的值。
+    128            VirtualOutData[3] = BlackRightLoc[DeviRowChosen][0]; //偏差求取时，选中的行号对应的右黑线的值。
+    129            */
+    130              /*
+    131            VirtualOutData[0] = temp1;                      //采集图像所花的时间，单位为ms
+    132            VirtualOutData[1] = temp2;                      //处理图像和反馈控制所花的总时间，单位为ms
+    133            VirtualOutData[2] = DeviNow;                    //当前偏差。
+    134            VirtualOutData[3] = ServoPercent;               //舵机打角的百分值，取值从-100到+100，左右不对称，左正右负。
+    135          */
+    136            /*
+    137            VirtualOutData[0] = PathType;                 
+    138            VirtualOutData[1] = SpeedFlag;                    
+    139            VirtualOutData[2] = DeviNow;                    
+    140            VirtualOutData[3] = ServoPercent;                   
+    141            */
+    142            
+    143            VirtualOutData[0] = temp1;        
+    144            VirtualOutData[1] = temp2;
+    145            VirtualOutData[2] = temp3;
+    146            VirtualOutData[3] = SlopeC;
+    147            
+    148            VirtualOutPut_Data();
+    149          }
+    150          
+    151          void Virtual2DataPush(uint8 chanel,uint16 data)
+    152          {
+    153              uSendBuf[chanel*2]=data/256;
+    154              uSendBuf[chanel*2+1]=data%256;
+    155          }
+    156          
+    157          
+    158          void Virtual2Send(void)
+    159          {
+    160            uint8 i,sum=0; 
+    161            //使用轮询的方式发送数据，当数据未发送，程序停在此处直到发送完成
+    162            uart_send1(UART0,251);
+    163            uart_send1(UART0,109);
+    164            uart_send1(UART0,37);
+    165            sum+=(251);      //全部数据加入校验
+    166            sum+=(109);
+    167            sum+=(37);
+    168            for(i=0;i<FreeCarsDataNum;i++)
+    169            {
+    170              uart_send1(UART0,uSendBuf[i]);
+    171              sum+=uSendBuf[i];         //全部数据加入校验
+    172            }
+    173            uart_send1(UART0,sum);
+    174          }
+    175          
+    176          
+    177          void Virtual2SendData(void)
+    178          {
+    179            uint16 temp1, temp2, temp3, temp4, temp5, temp6, temp7;
+    180              
+    181            ErrorCountNow6++;
+    182            
+    183            
+    184            if(tic1 > toc1)
+    185            {
+    186              temp1 = (tic1 - toc1) / 75000;
+    187            }
+    188            else
+    189            {
+    190              temp1 = 50;
+    191            }  
+    192            
+    193            
+    194            if(tic2 > toc2)
+    195            {
+    196              temp2 = (tic2 - toc2) / 75000;
+    197            }
+    198            else
+    199            {
+    200              temp2 = 50;
+    201            }
+    202            
+    203            if(tic3 > toc3)
+    204            {
+    205              temp3 = (tic3 - toc3) / 75000;
+    206            }
+    207            else
+    208            {
+    209              temp3 = 50;
+    210            }  
+    211          
+    212            if(tic4 > toc4)
+    213            {
+    214              temp4 = (tic4 - toc4) / 75000;
+    215            }
+    216            else
+    217            {
+    218              temp4 = 50;
+    219            }
+    220            
+    221            if(tic5 > toc5)
+    222            {
+    223              temp5 = (tic5 - toc5) / 75000;
+    224            }
+    225            else
+    226            {
+    227              temp5 = 50;
+    228            }
+    229            
+    230            if(tic6 > toc6)
+    231            {
+    232              temp6 = (tic6 - toc6) / 75;
+    233            }
+    234            else
+    235            {
+    236              temp6 = 50;
+    237            }
+    238            
+    239            if(tic7 > toc7)
+    240            {
+    241              temp7 = (tic7 - toc7) / 75;
+    242            }
+    243            else
+    244            {
+    245              temp7 = 50;
+    246            }
+    247              
+    248            
+    249            Virtual2DataPush( 0, ServoPIDInputVal-1000);
+    250            Virtual2DataPush( 1, SpeedLeftVal);
+    251            Virtual2DataPush( 2, SpeedTargetLeftVal);
+    252            Virtual2DataPush( 3, SpeedNowLeft);
+    253            Virtual2DataPush( 4, DeviFuse);
+    254            Virtual2DataPush( 5, DeviFuse-DeviPre);
+    255            Virtual2DataPush( 6, ShiZhiFlag*200);
+    256            
+    257            Virtual2DataPush( 7, PathType*300);
+    258            Virtual2DataPush( 8, LightHouseWaitStopDelayFlag);
+    259          
+    260            Virtual2DataPush( 9, GyroResultFlag);
+    261            Virtual2DataPush(10, BrickSpeDealCenFlag * 100);  
+    262            Virtual2DataPush(11, StopFlag);
+    263            Virtual2DataPush(12, StopRealFlag);
+    264            Virtual2DataPush(13, BrickSpeDealFlag * 100);
+    265            Virtual2DataPush(14, BrickSpeDealBackCount);  
+    266            Virtual2DataPush(15, PathRealStraightFlag);
+    267            Virtual2DataPush(16, PathType);
+    268           
+    269            
+    270            
+    271          //    Virtual2DataPush( 0, DeviFuse);
+    272          //    Virtual2DataPush( 1, ImgProSucceedFlag * 100);
+    273          //    Virtual2DataPush( 2, ServoPIDInputVal - ServoPIDCen);
+    274          //    Virtual2DataPush( 3, BlackLeftHeadLine);
+    275          //    Virtual2DataPush( 4, BlackRightHeadLine);
+    276          //    Virtual2DataPush( 5, StopFlag);
+    277          //    Virtual2DataPush( 6, SpeedPIDDVal);  
+    278          //    Virtual2DataPush( 7, speed_kp);
+    279          //    Virtual2DataPush( 8, speed_kd);
+    280          //    
+    281          //    Virtual2DataPush( 9, SpeedNowLeft);
+    282          //    Virtual2DataPush(10, SpeedTargetLeftVal);  
+    283          //    Virtual2DataPush(11, SpeedLeftVal);
+    284          //    Virtual2DataPush(12, SpeedNowRight);
+    285          //    Virtual2DataPush(13, SpeedTargetRightVal);
+    286          //    Virtual2DataPush(14, SpeedRightVal);  
+    287          //    Virtual2DataPush(15, SpeedRightValP);
+    288          //    Virtual2DataPush(16, SpeedRightValD);
+    289            
+    290             /*
+    291            Virtual2DataPush( 0, DeviFuse);
+    292            Virtual2DataPush( 1, ImgProSucceedFlag * 100);
+    293            Virtual2DataPush( 2, LimitLeftHeadWB);
+    294            Virtual2DataPush( 3, LimitLeftHeadB);
+    295            Virtual2DataPush( 4, LimitLeftHeadW);
+    296            Virtual2DataPush( 5, flag000);
+    297            Virtual2DataPush( 6, countcount);
+    298            
+    299            Virtual2DataPush( 7, CURVEL);
+    300            Virtual2DataPush( 8, CURVER);
+    301            
+    302            Virtual2DataPush( 9, BlackRightHeadLine-BlackLeftHeadLine);
+    303            Virtual2DataPush(10, PathType);  
+    304            Virtual2DataPush(11, AngleConfirmCount);
+    305            Virtual2DataPush(12, AngleConfirmCountMax);
+    306            Virtual2DataPush(13, AngleConfirmLockFlag);
+    307            Virtual2DataPush(14, AngleSpeDealBackCount);  
+    308            Virtual2DataPush(15, AngleSpeDealDir);
+    309            Virtual2DataPush(16, BlackRightContinueFlag);
+    310             
+    311            
+    312           
+    313           
+    314           
+    315             Virtual2DataPush( 5, BlackLeftHeadLine);
+    316            Virtual2DataPush( 6, BlackRightHeadLine);
+    317            
+    318            Virtual2DataPush( 7, PathType);
+    319            Virtual2DataPush( 8, flag000);
+    320          
+    321            Virtual2DataPush( 9, flag111);  
+    322            Virtual2DataPush(10, temp3);  
+    323            Virtual2DataPush(11, AngleConfirmCount);
+    324            Virtual2DataPush(12, AngleConfirmCountMax);
+    325            Virtual2DataPush(13, AngleConfirmFlag);
+    326            Virtual2DataPush(14, AngleSpeDealDir);  
+    327            Virtual2DataPush(15, AngleSpeDealBackCount);
+    328            Virtual2DataPush(16, AngleSpeDealFlag);
+    329          
+    330            Virtual2DataPush( 0, DeviFuse);
+    331            Virtual2DataPush( 1, ImgProSucceedFlag * 100);
+    332            Virtual2DataPush( 2, ServoPIDInputVal-ServoPIDCen);
+    333            Virtual2DataPush( 3, QuadRightCount);
+    334            Virtual2DataPush( 4, SpeedTargetVal);
+    335            Virtual2DataPush( 5, SpeedNowLeft);
+    336            Virtual2DataPush( 6, SpeedTargetLeftVal);
+    337            
+    338            Virtual2DataPush( 7, SpeedLeftVal / 50);
+    339            Virtual2DataPush( 8, SpeedNowRight);
+    340            Virtual2DataPush( 9, BlackRightLoc[39][0]);
+    341            Virtual2DataPush(10, BlackRightLoc[29][0]);  
+    342            Virtual2DataPush(11, BlackRightLoc[19][0]);
+    343            Virtual2DataPush(12, BlackRightLoc[14][0]);
+    344            Virtual2DataPush(13, temptempSpeedLeftVal / 50);
+    345            Virtual2DataPush(14, ADResult0);
+    346            Virtual2DataPush(15, ADResult1);
+    347            Virtual2DataPush(16, ADResult2);
+    348            */
+    349            
+    350            /*
+    351            Virtual2DataPush( 9, AngleConfirmFlag);           //直角弯最终确认标志，1确认，0否认
+    352            Virtual2DataPush(10, AngleConfirmLockFlag);       //直角弯判断成功锁存标志位,确认是直角弯后置位，用以确认直角弯特殊处理开始的位置。
+    353            Virtual2DataPush(11, AngleSpeDealDir);            //直角弯方向标志，0左直角弯，1右直角弯，2错误。
+    354            Virtual2DataPush(12, AngleSpeDealBackCount);      //直角弯最终确认后，特殊情况次数的倒数计数。
+    355            Virtual2DataPush(13, AngelSpeDealExitJudgeFlag);  //出直角弯判断标志，1已出，0未出
+    356            Virtual2DataPush(14, AngleSpeDealFlag);           //1说明该幅图像进行了直角弯的特殊处理,0说明未进行。
+    357            Virtual2DataPush(15, AngleConfirmCount);
+    358            Virtual2DataPush(16, AngleConfirmCountMax);  
+    359            
+    360            //Virtual2DataPush(15, BlackLeftEndLine);
+    361            //Virtual2DataPush(16, BlackRightEndLine);
+    362            Virtual2DataPush(15, SpeedLeftVal);
+    363            Virtual2DataPush(16, SpeedRightVal);
+    364            Virtual2DataPush( 0, DeviFuse);
+    365          
+    366            Virtual2DataPush( 1, ImgBlackSucceedFlag * 100);
+    367            Virtual2DataPush( 2, ErrorCountNow7);//场中断
+    368            
+    369            Virtual2DataPush( 3, ErrorCountNow8);     //行中断
+    370            Virtual2DataPush( 4, ErrorCountNow9);     //DMA中断   
+    371            Virtual2DataPush( 5, ErrorCountNow0);   //SERVO
+    372            Virtual2DataPush( 6, ErrorCountNow1);   //MOTOR
+    373            Virtual2DataPush( 7, ErrorCountNow5);   //IMAGEPRO
+    374            Virtual2DataPush( 8, temp1);   //VIR
+    375            Virtual2DataPush( 9, temp2);
+    376            Virtual2DataPush(10, temp3);
+    377            Virtual2DataPush(11, temp4);
+    378            Virtual2DataPush(12, temp5);
+    379            Virtual2DataPush(13, temp6);  
+    380            Virtual2DataPush(14, temp7);
+    381            Virtual2DataPush(15, QuadLeftCount);
+    382            Virtual2DataPush(16, QuadRightCount);   
+    383          */
+    384            
+    385           
+    386            
+    387            Virtual2Send();
+    388          }
+
+Errors: 1
+Warnings: 12

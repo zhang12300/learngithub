@@ -1,0 +1,86 @@
+###############################################################################
+#                                                                             #
+#     IAR Assembler V8.30.1.114/W32 for ARM 04/Sep/2018  17:35:49             #
+#     Copyright 1999-2018 IAR Systems AB.                                     #
+#                                                                             #
+#           Source file   =  C:\SPB_Data\learngit\learngithub\k60_zju_to_kv58\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\src\Project_Settings\Startup_Code\crt0.s#
+#           List file     =  C:\SPB_Data\learngit\learngithub\k60_zju_to_kv58\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\RAM\List\crt0.lst#
+#           Object file   =  C:\SPB_Data\learngit\learngithub\k60_zju_to_kv58\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\RAM\Obj\crt0.o#
+#           Command line  =  -f                                               #
+#                            C:\Users\Lenovo\AppData\Local\Temp\EW83AB.tmp    #
+#                            (C:\SPB_Data\learngit\learngithub\k60_zju_to_kv58\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\src\Project_Settings\Startup_Code\crt0.s #
+#                            -OC:\SPB_Data\learngit\learngithub\k60_zju_to_kv58\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\RAM\Obj #
+#                            -s+ -M<> -w+ -r                                  #
+#                            -LC:\SPB_Data\learngit\learngithub\k60_zju_to_kv58\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\RAM\List #
+#                            -t8 --cpu ARM7TDMI --fpu None)                   #
+#                                                                             #
+###############################################################################
+
+                                        CPSIE   i                       ;
+                        Unmask interrupts
+                                --------^
+                                "C:\SPB_Data\learngit\learngithub\k60_zju_to_k
+                       v58\下位机程序_摄像头1队3月14日\下位机程�
+                       ��_摄像头1队3月1
+                                4日\src\Project_Settings\Startup_Code\crt0.s"
+                       ,27  Error[438]: This instruction is not available in
+                        the selected cpu/core
+
+
+    1                           /*
+    2                            * File:        crt0.s
+    3                            * Purpose:     Lowest level routines for
+                                 Kinetis.
+    4                            *
+    5                            * Notes:       
+    6                            *
+    7                            */
+    8                           
+    9                           ;         AREA   Crt0, CODE, READONLY      ;
+                                 name this block of code
+   10                             SECTION .noinit : CODE
+   11                           
+   12                                   EXPORT  __startup
+   13                           __startup
+   14    00000000 0000A0E3          MOV     r0,#0                   ;
+                                                                     Initialize
+                                                                     the
+                                                                     GPRs
+   15    00000004 0010A0E3              MOV     r1,#0
+   16    00000008 0020A0E3              MOV     r2,#0
+   17    0000000C 0030A0E3              MOV     r3,#0
+   18    00000010 0040A0E3              MOV     r4,#0
+   19    00000014 0050A0E3              MOV     r5,#0
+   20    00000018 0060A0E3              MOV     r6,#0
+   21    0000001C 0070A0E3              MOV     r7,#0
+   22    00000020 0080A0E3              MOV     r8,#0
+   23    00000024 0090A0E3              MOV     r9,#0
+   24    00000028 00A0A0E3              MOV     r10,#0
+   25    0000002C 00B0A0E3              MOV     r11,#0
+   26    00000030 00C0A0E3              MOV     r12,#0
+                                        CPSIE   i                       ;
+                        Unmask interrupts
+                                --------^
+                                "C:\SPB_Data\learngit\learngithub\k60_zju_to_k
+                       v58\下位机程序_摄像头1队3月14日\下位机程�
+                       ��_摄像头1队3月1
+                                4日\src\Project_Settings\Startup_Code\crt0.s"
+                       ,27  Error[438]: This instruction is not available in
+                        the selected cpu/core
+   28                                   import start
+   29    00000034 ........              BL      start                  ; call
+                                                  the C code
+   30                           __done
+   31    00000038 FEFFFFEA              B       __done
+   32                           
+   33                           
+   34                                   END
+##############################
+#        Errors:   1         #
+#        Warnings: 0         #
+#         Bytes: 60          #
+##############################
+
+
+
+
