@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "C:\Users\Lenovo\Desktop\class3\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\settings\Sirius.RAM.general.xcl" --backend -f "C:\Users\Lenovo\Desktop\class3\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\settings\Sirius.RAM.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "C:\SPB_Data\learngit\learngithub\k60_zju_to_kv58\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\settings\Sirius.RAM.general.xcl" --backend -f "C:\SPB_Data\learngit\learngithub\k60_zju_to_kv58\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\settings\Sirius.RAM.driver.xcl" 
 }
 else
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "C:\Users\Lenovo\Desktop\class3\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\settings\Sirius.RAM.general.xcl" --debug_file=$debugfile --backend -f "C:\Users\Lenovo\Desktop\class3\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\settings\Sirius.RAM.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "C:\SPB_Data\learngit\learngithub\k60_zju_to_kv58\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\settings\Sirius.RAM.general.xcl" --debug_file=$debugfile --backend -f "C:\SPB_Data\learngit\learngithub\k60_zju_to_kv58\下位机程序_摄像头1队3月14日\下位机程序_摄像头1队3月14日\settings\Sirius.RAM.driver.xcl" 
 }

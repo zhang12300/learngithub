@@ -58,6 +58,11 @@ QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ*/
     #include "LPTMR.h"   
     #include "LQMPU6050.h"
     #include "LQ9AX.h"
+    //新添加的头文件 
+    #include "Flash.h"
+    #include "Debug.h"
+    
+    
 
 
 

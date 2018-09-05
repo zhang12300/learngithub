@@ -1,0 +1,989 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.10.1.12857/W32 for ARM       01/Sep/2018  17:30:39
+# Copyright 1999-2017 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\C\Function_C\RunControl.c
+#    Command line =  
+#        -f C:\Users\Lenovo\AppData\Local\Temp\EW6E7E.tmp
+#        (C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\C\Function_C\RunControl.c
+#        -D IAR -D TWR_K60N512 --preprocess
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List
+#        -lCN
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List
+#        -lB
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List
+#        -o
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.0\arm\INC\c\DLib_Config_Full.h"
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\Component_H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\Frame_H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\Function_H\
+#        -I
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\H\SD_H\
+#        -I D:\quartus\quartus\cusp\80\synthinclude\ -Ol --use_c++_inline -I
+#        "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.0\arm\CMSIS\Include\" -D ARM_MATH_CM4)
+#    Locale       =  C
+#    List file    =  
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\List\RunControl.lst
+#    Object file  =  
+#        C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\bin\Ram\Obj\RunControl.o
+#
+###############################################################################
+
+C:\Users\Lenovo\Desktop\class3\@@@@@_@@@1@3@14@\@@@@@_@@@1@3@14@\src\Sources\C\Function_C\RunControl.c
+      1          /******************************************************************************/
+      2          /*******************************************************************************
+      3            文件名：运动控制C文件RunControl.c
+      4            功  能：偏差求取，PID反馈，控制电机，控制舵机。
+      5            日  期：2014.11.15
+      6            作  者：YCR & HJZ
+      7            备  注：
+      8          *******************************************************************************/
+      9          /******************************************************************************/
+     10          #include "RunControl.h"
+     11          
+     12          
+     13          uint8 DuZhuanFlag = 0;              //堵转标志
+     14          uint8 TimeOutFlag = 0;              //时间到标志
+     15          uint16 StopLineSpeed = 0;            //停车控制速度
+     16          uint8 StopLineControlFlag = 0;             //停车控制标志
+     17          uint8 StopLineSpeedControlPauseFlag = 0;          //停车的时候间隔一场图像的时间控一次，防止正反电压切换的时候出问题
+     18          
+     19          
+     20          uint16 SpeedXiaoZhiDao = 280;       //小直道
+     21          uint16 SpeedTargetValGryoUp = 200;  //上坡速度。
+     22          uint16 SpeedBrick = 200;            //障碍速度
+     23          
+     24          uint16 StopFlagMaxCount = 0;      //停车标志置位后，停车计数，大于一定值后最终停车标志置位。
+     25          uint16 StopFlagMaxCountNum = 5;      //停车标志置位后，停车计数阈值，大于该值后，最终停车标志置位。1个单位是0.1秒。 
+     26          
+     27          uint16 SpeedStrategyChosen = 0;     //速度策略的档位，0~4，0档最慢，4档最快。
+     28          uint16 MotorTakeOffQuadCountLimit = 0; //起飞控制时，转为正常电机PID控制前两轮编码器需要达到的脉冲数。
+     29          uint16 SpeedTargetValStraight = 350;      //长直道给定速度。
+     30          uint16 SpeedTargetValWaitStop = 20;     //灯塔等待停车速度。20代表2m/s。
+     31          
+     32          uint8 StopRealFlag = 0;     //绝对停止标志。1表示绝对停止，电机一定输出0。
+     33          
+     34          int32 ServoTemp = 0;
+     35          int32 DeltaVelocity = 0;   //差速计算验证。
+     36          
+     37          int16 ErrorCountNow0 = 0;
+     38          int16 ErrorCountNow1 = 0;
+     39          int32 temp_speed_D;
+     40          int32 temp_speed_P;
+     41          uint8 MotorTakeOffFlag = 0;   //起飞控制标志位，1未起飞，0已起飞。初始化为未起飞。
+     42          uint8 SpeedTargetLevel;//目标速度等级，不模糊，分段求取
+     43          uint8 StopFlag=0;       // 停车标志，1表示停车
+     44          
+     45          
+     46          
+     47          
+     48          uint16 ServoPIDPMat[15] = 
+     49          {
+     50           0,165,180,205,215,
+     51           235,240,229,213,201,
+     52           185,173,163,154,154
+     53          };
+     54          //舵机PID的P矩阵，行依据是当前偏差DeviFuse的绝对值的等级
+     55          //扩大了100倍。
+     56          
+     57          uint16 Steer_kp[8] = 
+     58          {
+     59            // 0,130,206,209,215,186,150,132
+     60            //0,130,186,209,209,186,160,141
+     61            //0,130,186,209,203,178,156,141 //2.1m
+     62              //150,150,150,150,150,150,150,150 
+     63             0,20,30,33,40,40,35,35
+     64            // 0,115,150,183,196,178,158,141//2.2
+     65            //0,90,120,153,176,178,158,141
+     66             //0,40,60,70,80,80,70,70
+     67          };
+     68          
+     69          //舵机D矩阵。
+     70          uint16 ServoPIDDMat[7] = 
+     71          {
+     72          //0  25   45  60  80  100  120  140
+     73          //   2,   4,   3,  2,  2 ,  1,   1,
+     74           //25,   25,   25,   25,  25,   25,   25
+     75           //12,   12,   12,   12,  12,   12,   12
+     76          // 15,   15,   15,   15,  15,   15,   15
+     77           10,   10,   10,   10,   10,   10,   10
+     78           //19,   19,   19,   19,  19,   19,   19
+     79            //  50,   50,   50,  50,  50,   50,   50
+     80          //  20,   20,   20,   20,  20,   20,   20
+     81           // 0,    0,    0,    0,   0,    0,   0
+     82          };
+     83          uint16 ServoPIDD2Mat[7] = 
+     84          {
+     85          // 0  25   45  60  80  100  120  140
+     86            // 2,   3,   3, 3,  4 ,  3,   2,
+     87          //15,   15,   15,   15,  15,   15,   15
+     88           // 19,   19,   19,   19,  19,   19,   19
+     89          //12,   12,   12,   12,  12,   12,   12 
+     90            10,   10,   10,   10,   10,   10,   10
+     91           //20,   20,   20,   20,  20,   20,   20
+     92          // 25,   25,   25,   25,  25,   25,   25
+     93          // 50,   50,   50,  50,  50,   50,   50
+     94          //    0,    0,    0,    0,   0,   0,    0
+     95          };
+     96          uint8 speedP_goal[11]=
+     97          {
+     98              //-140 -110 -80 -50 -25  0   25  50    80     110  140
+     99              //20,  23,  26, 29, 30, 33,  30,  29,   26,   23,  20, 
+    100              // 24, 26,  30, 33, 35, 37,  35,  33,   30,   26,  24, 
+    101              // 27, 29,  33, 36, 38, 41,  38,  36,   33,   29,  27,
+    102               //30, 31,  34, 36, 38, 41,  38,  36,   34,   31,  30,
+    103               //45, 48,  51, 53,  57, 60,  57,  53,   51,   48,  45, 
+    104               //20,  20,   20,  20,  20,   20,  20,   20,  20,  20,
+    105               10,10,10,10,10,10,10,10,10,10,10,
+    106          };
+    107          //实际目标脉冲数矩阵。
+    108          
+    109          uint16 SpeedTargetMat[9][11]=
+    110          {
+    111           //-140, -110, -80,  -50 , -25 ,  0  , 25  ,  50 ,  80  , 110 , 140,
+    112           //190, 200, 210, 215, 220, 230, 220, 215, 210, 200, 190,    //0档
+    113            10,10,10,10,10,10,10,10,10,10,10,
+    114          // 20,30,40,50,60,60,60,50,40,30,20,
+    115             //60,80,100,120,140,140,140,120,100,80,60,
+    116             //100, 120, 140, 180, 200, 200, 200, 180, 140, 120, 100,
+    117             200, 200, 210, 220, 230, 240, 230, 220, 210, 200, 200,    //1档
+    118             210, 210, 220, 230, 240, 260, 240, 230, 220, 210, 210,    //2档，比较稳定
+    119             210, 220, 230, 240, 250, 280, 250, 240, 230, 220, 210,    //3档，直道高，弯道低
+    120             210, 225, 235, 250, 260, 280, 260, 250, 235, 225, 210,    //4档，直道高，弯道高
+    121             210, 210, 240, 250, 270, 300, 270, 250, 240, 210, 210,    //5档，直道高，弯道低
+    122             220, 230, 240, 260, 280, 300, 280, 260, 240, 230, 220,    //6档，直道高，弯道高
+    123             200, 210, 220, 240, 280, 330, 280, 240, 220, 210, 200,    //7档，直道高，弯道低  
+    124             210, 220, 230, 250, 280, 330, 280, 250, 230, 220, 210,    //8档，直道高，弯道高
+    125          };
+    126          /*
+    127          uint16 SpeedTargetMat[11][9]=
+    128          {
+    129            //-140 -110 -80  -50  -25   0   25   50   80   110  140
+    130              200, 200, 200, 205, 210, 210, 210, 205,  200, 200, 200,  //-15
+    131              200, 200, 200, 210, 210, 220, 210, 210,  200, 200, 200,  //-10
+    132              200, 205, 210, 210, 220, 230, 220, 210,  210, 205, 200,  //-6
+    133              200, 210, 210, 215, 230, 240, 230, 215,  210, 210, 200,  //-2
+    134              200, 210, 220, 220, 240, 260, 240, 220,  220, 210, 200,  //0
+    135              200, 210, 210, 215, 230, 240, 230, 215,  210, 210, 200,  //2
+    136              200, 205, 210, 210, 220, 230, 220, 210,  210, 205, 200,  //6
+    137              200, 200, 200, 210, 210, 220, 210, 210,  200, 200, 200,  //10
+    138              200, 200, 200, 205, 210, 210, 210, 205,  200, 200, 200   //15
+    139          };
+    140          */
+    141          //电机PID的P矩阵，依据是当前偏差devinow的绝对值的等级
+    142          uint8 MotorPIDPMat[10] = 
+    143          {
+    144          60,65,70,70,70,
+    145          75,75,80,80,80
+    146          };
+    147          
+    148          uint8 DoneFlag = 0;
+    149          uint8 QuadSpeedLevel = 0;    //编码器测量的实时速度的速度等级，10个等级，0最慢，9最快。
+    150          uint8 SlopeCLevel = 0;        //斜率的绝对值的等级，6个等级，0最直，5最斜
+    151          
+    152          //舵机
+    153          uint16 ServoPIDP = 0;                   //舵机PID选取的P值。
+    154          uint16 ServoPIDD = 0;                   //舵机PID选取的D值。
+    155          uint32 ServoPIDInputVal = ServoPIDCen;            //实际输入到舵机的值
+    156          uint32 ServoPIDInputValOld = ServoPIDCen;         //上次输入到舵机的值
+    157          int32 ServoPIDInputValP = 0;            //实际输入到舵机的值的P分量
+    158          int32 ServoPIDInputValD = 0;            //实际输入到舵机的值的D分量
+    159          
+    160          //uint32 ServoPIDVal = ServoPIDCen;     //舵机PID控制后输入的值。
+    161          //电机
+    162          
+    163          
+    164          uint32 SpeedTargetVal = 0;               //平均目标脉冲数。差速前。
+    165          uint32 SpeedLastTargetVal = 0;           //上次平均目标脉冲数。差速前。
+    166          uint16 SpeedTargetLeftVal = 0;           //左电机目标脉冲数。差速后。
+    167          uint16 SpeedTargetRightVal = 0;          //右电机目标脉冲数。差速后。
+    168          uint16 SpeedLastTargetLeftVal = 0;       //上一次左电机目标脉冲数，差速后
+    169          uint16 SpeedLastTargetRightVal = 0;      //上一次右电机目标脉冲数，差速后
+    170          
+    171          uint16 SpeedPIDPVal = 25;                  //电机PID选取的P值
+    172          uint16 SpeedPIDDVal = 65;                   //电机PID选取的D值
+    173          uint16 SpeedPIDIVal = 0;                 //电机PID选取的I值
+    174          int32 speed_kp,speed_kd;
+    175          
+    176          int32 SpeedLeftVal = 0;                //左电机实际输入的FTM值。
+    177          int32 SpeedRightVal = 0;               //右电机实际输入的FTM值。
+    178          int32 SpeedLeftValP = 0;               //左电机实际输入的FTM值的P分量。
+    179          int32 SpeedLeftValD = 0;               //左电机实际输入的FTM值的D分量。
+    180          int32 SpeedRightValP = 0;              //右电机实际输入的FTM值的P分量。
+    181          int32 SpeedRightValD = 0;              //右电机实际输入的FTM值的D分量。
+    182          
+    183          int16 temptempSpeedLeftVal;
+    184          
+    185          uint8 SpeedDiffGetSwitch =0;          //差速开关。1开启差速。0关闭差速。
+    186          
+    187          //速度策略选项
+    188          uint8 StrategyLoadSpeedIndex = 1;      //速度策略，1最佳，2高速，3低速。
+    189          
+    190          //坡道的给定速度，写在FLASH中，通过OLED修改。flash里面的乘以100才归算到统一单位
+    191          uint8 SpeedTargetValGryoResult = 0;
+    192          
+    193          //直角弯给定速度，写在FLASH中，通过OLED修改。flash里面的乘以100才归算到统一单位
+    194          uint8 SpeedTargetValAngle = 150;
+    195          
+    196          //===================================舵机======================================
+    197          //////////////////////////////////舵机PID控制，后期需要放进PIT中断服务函数中
+    198          uint8 ServoPID(void)
+    199          { 
+    200            int32 temp,DeviFuse_fu;
+    201            uint8 DeviFuse_grade;
+    202            
+    203            DeviFuse = (DeviFuse*10 + DeviFuse_old*0)/10;
+    204            DeviFuse_old = DeviFuse;
+    205            
+    206            
+    207             
+    208            temp=AbsInt(DeviFuse);
+    209            
+    210          /*  if(temp > 45)
+    211            {
+    212              if(AbsInt(DeviFuse-DeviPre) > AbsInt(DeviPre)*0.2)
+    213              {
+    214                  DeviFuse = (DeviFuse*3 + DeviPre*7)/10;
+    215              }
+    216            }*/
+    217            
+    218            if(temp<20)
+    219            {
+    220               DeviFuse_grade=1;
+    221               DeviFuse_fu=(temp-0)*750/(20-0);
+    222               //FTM0_C7V = 200;
+    223            }
+    224            else if(temp<30)
+    225            {
+    226               DeviFuse_grade=2;
+    227               DeviFuse_fu=(temp-20)*750/(30-20);
+    228               //FTM0_C7V = 170;
+    229            }
+    230             else if(temp<40)
+    231            {
+    232               DeviFuse_grade=3;
+    233               DeviFuse_fu=(temp-30)*750/(40-30);
+    234               //FTM0_C7V = 160;
+    235            }
+    236            else if(temp<50)
+    237            {
+    238               DeviFuse_grade=4;
+    239               DeviFuse_fu=(temp-40)*750/(50-40);
+    240               //FTM0_C7V = 150;
+    241            }
+    242            else if(temp<60)
+    243            {
+    244               DeviFuse_grade=5;
+    245               DeviFuse_fu=(temp-50)*750/(60-50);
+    246               //FTM0_C7V = 140;
+    247            }
+    248            else if(temp<80)
+    249            {
+    250               DeviFuse_grade=6;
+    251               DeviFuse_fu=(temp-60)*750/(80-60);
+    252               //FTM0_C7V = 120;
+    253            }
+    254             else if(temp<100)
+    255            {
+    256               DeviFuse_grade=7;
+    257                DeviFuse_fu=(temp-80)*750/(100-80);
+    258                //FTM0_C7V = 100;
+    259            }
+    260            else
+    261            {
+    262               DeviFuse_grade=7; 
+    263               DeviFuse_fu=750;//1000;//修改过
+    264               //FTM0_C7V = 100;
+    265            }
+    266            
+    267            ServoPIDP=(DeviFuse_fu*Steer_kp[DeviFuse_grade]+(750-DeviFuse_fu)*Steer_kp[DeviFuse_grade-1])/1000;
+    268            //P分量。
+    269            ServoPIDInputValP = ServoPIDP * DeviFuse / 10;
+    270            //D分量
+    271            
+    272            if((AbsInt(DeviFuse)-AbsInt(DeviPre))>=0)
+    273            {
+    274             ServoPIDD=ServoPIDDMat[DeviFuse_grade-1];
+    275            }
+    276            else
+    277            {
+    278            ServoPIDD=ServoPIDD2Mat[DeviFuse_grade-1];
+    279            }
+    280            
+    281            
+    282            
+    283            ServoPIDInputValD=ServoPIDD*(DeviFuse-DeviPre);
+    284            //记录上一次的输入值。
+    285            ServoPIDInputValOld = ServoPIDInputVal;
+    286          
+    287            //新的输入值
+    288            ServoPIDInputVal = ServoPIDCen + ServoPIDInputValP + ServoPIDInputValD;
+    289           
+    290            //滤波
+    291             ServoPIDInputVal = (ServoPIDInputValOld * 0 + ServoPIDInputVal * 10) / 10;
+    292            /*
+    293             //舵机跳变限幅
+    294            if(ServoPIDInputVal>(ServoPIDInputValOld+70))
+    295            {
+    296              ServoPIDInputVal=ServoPIDInputValOld+70;
+    297            }
+    298            else if(ServoPIDInputVal<(ServoPIDInputValOld-70))
+    299            {
+    300              ServoPIDInputVal=ServoPIDInputValOld-70;
+    301            }
+    302            else
+    303            {
+    304             
+    305            }
+    306            */
+    307             
+    308            //针对障碍的打角限制
+    309            BrickSpeDealServor();
+    310            
+    311            //针对十字的打角限制，以及修改偏差
+    312            if(ShiZhiFlag==1)
+    313            {
+    314                if(ServoPIDInputVal >= (ServoPIDMax-ServoPIDCen)/5+ServoPIDCen)
+    315                {
+    316                  ServoPIDInputVal = (ServoPIDMax-ServoPIDCen)/5+ServoPIDCen;
+    317                }
+    318                
+    319                else if(ServoPIDInputVal <= ServoPIDCen-(ServoPIDCen-ServoPIDMin)/5)
+    320                {
+    321                  ServoPIDInputVal = ServoPIDCen-(ServoPIDCen-ServoPIDMin)/5;
+    322                }
+    323                DeviFuse = 0;
+    324            }
+    325             
+    326            //限幅。  
+    327            if(ServoPIDInputVal >= ServoPIDMax)
+    328            {
+    329              ServoPIDInputVal = ServoPIDMax;
+    330            }
+    331            
+    332            else if(ServoPIDInputVal <= ServoPIDMin)
+    333            {
+    334              ServoPIDInputVal = ServoPIDMin;
+    335            }
+    336            
+    337            else
+    338            {
+    339              
+    340            } 
+    341          
+    342            //赋值给实际的舵机I/O口。
+    343            //FTM1_C0V = 2100;右打死
+    344            FTM1_C0V = (uint16)(2*ServoPIDCen-ServoPIDInputVal);
+    345            return 1;
+    346          }
+    347          
+    348              
+    349          //======================================================================
+    350          //函数名：SpeedDiffGet
+    351          //功  能：左右电机的差速值计算。
+    352          //参  数：tempSpeedTarget预设速度值，num处理的电机编号0左1右
+    353          //返  回：tempSpeedTarget差速后的预设速度值
+    354          //影  响：
+    355          //说  明：1. MotorPID应该放在ServoPID后，即ServoPIDInputVal更新后。
+    356          //      
+    357          //             
+    358          //======================================================================
+    359          uint16 SpeedDiffGet(uint16 tempSpeedTarget, uint8 num)
+    360          {
+    361            
+    362            //int32 DeltaVelocity;
+    363            //int32 ServoTemp = 0;
+    364            uint32 val;
+    365            
+    366            //舵机偏量的绝对值
+    367            ServoTemp = AbsInt(ServoPIDCen - ServoPIDInputVal);
+    368           // DeltaVelocity = ((1000 * ServoTemp / 125) - (8 * ServoTemp * ServoTemp / 1000) + (71 * ServoTemp * ServoTemp * ServoTemp / 1000000))*30/10;//乘以目标速度转化成速度差,该值放大了10000倍
+    369            DeltaVelocity = ((1000 * ServoTemp / 125)  + (71 * ServoTemp * ServoTemp * ServoTemp / 1000000))*13/10;//乘以目标速度转化成速度差,该值放大了10000倍
+    370            //DeltaVelocity=(70200*ServoTemp-0*ServoTemp*ServoTemp+15*ServoTemp*ServoTemp*ServoTemp/10-345000)/10000;
+    371           // DeltaVelocity=(70200*ServoTemp+2*ServoTemp*ServoTemp*ServoTemp)/10000;
+    372            //当前右转。
+    373            if(ServoPIDInputVal > ServoPIDCen)
+    374            {
+    375              //对左电机的处理，速度加大。
+    376              if(num == 0)
+    377              {    
+    378               val = tempSpeedTarget + (uint16)(tempSpeedTarget * DeltaVelocity / 10000);
+    379              }
+    380              //对右电机的处理，速度减小。
+    381              else
+    382              {
+    383                val = tempSpeedTarget - (uint16)(tempSpeedTarget * DeltaVelocity / 10000);
+    384              }
+    385            }
+    386            //当前左转。
+    387            else if(ServoPIDInputVal < ServoPIDCen)
+    388            {
+    389              //对左电机的处理，速度减小。
+    390              if(num == 0)
+    391              {
+    392                val = tempSpeedTarget - (uint16)(tempSpeedTarget * DeltaVelocity / 10000);
+    393              }
+    394              //对右电机的处理，速度加大。
+    395              else
+    396              {
+    397                val = tempSpeedTarget + (uint16)(tempSpeedTarget * DeltaVelocity / 10000);
+    398              }
+    399            }
+    400            //当前直走，不作任何处理。
+    401            else
+    402            {
+    403              //val = tempSpeedTarget;
+    404              val = tempSpeedTarget;
+    405            }  
+    406            
+    407            return val;
+    408          }
+    409          //特殊赛道时，平均目标速度的特殊处理。
+    410          uint32 SpeedTargetValSpePathDeal(uint32 temp)
+    411          {
+    412            uint32 val;
+    413            
+    414            //每次只允许有一种特殊赛道。
+    415            if(StopFlag == 1)
+    416            {
+    417              val = 0;
+    418            }
+    419           /* else if(LightHouseWaitStopFlag != 0)
+    420            {
+    421              //val = SpeedTargetValWaitStop;
+    422              light_control(PORTA, 17, Light_ON);
+    423            }
+    424            //直角
+    425            else if(AngleConfirmLockFlag == 1)
+    426            {
+    427              //直角弯锁存等待时，减速处理。
+    428              //val = SpeedTargetValAngle;
+    429              light_control(PORTD, 15, Light_ON);
+    430            }*/
+    431            else if(BrickConfirmLockFlag == 1 || BrickSpeDealFlag == 1)
+    432            {
+    433              val = SpeedBrick;
+    434            }
+    435            //上坡速度。大的话就飞过，小的话就贴着过。
+    436            else if(GyroResultFlag == 1)
+    437            {
+    438              val = SpeedTargetValGryoUp;
+    439            }
+    440            //下坡后的启动速度。
+    441            else if(GyroResultFlag == 2)
+    442            {
+    443              //若在坡上，则将平均目标脉冲数赋值为较小的值。
+    444              val = SpeedTargetValGryoResult;
+    445            }
+    446            //长直道
+    447            else if(PathRealStraightFlag == 1)
+    448            {
+    449              //长直道，速度加快。
+    450              val = SpeedTargetValStraight;
+    451            }
+    452            else if(xiaoZhiDaoFlag == 1)
+    453            {
+    454              val = SpeedXiaoZhiDao;
+    455                //val = temp;
+    456            }
+    457            //无特殊赛道，返回原值。
+    458            else
+    459            {
+    460              val = temp;
+    461            }
+    462            
+    463            return val;
+    464          }
+    465              
+    466          
+    467          
+    468          //=========================电机========================================
+    469          //////////////////////////////////电机PID控制，后期需要放进PIT中断服务函数中
+    470          uint8 MotorPID(void)
+    471          {
+    472            uint8 DeviFuseLevel;
+    473            uint8 i;
+    474            //uint8 j;     
+    475            int32 temp_speed_bias;
+    476            
+    477            
+    478            ErrorCountNow1++;  
+    479            //起飞未完成前，按起飞的速度控制。
+    480            if(MotorTakeOffFlag == 1)
+    481            {
+    482              //偏差等级的获取
+    483              DeviFuseLevel = AbsInt(DeviFuse) / 10;
+    484              if(DeviFuseLevel > 8)
+    485              {
+    486                //偏差等级的修正
+    487                DeviFuseLevel = 9;
+    488              }
+    489              else
+    490              { 
+    491                
+    492              }
+    493              
+    494              //模糊求取平均目标脉冲数
+    495              SpeedTargetVal = 0;
+    496             
+    497              for(i = 0;i < 11; i++)
+    498              {
+    499          //      for(j=0;j <9 ;j++)
+    500          //      {
+    501          //         SpeedTargetVal += DeviFusemtr[i]*DeviFuse_dotmtr[j] * SpeedTargetMat[i][j]/1000;      
+    502          //      }
+    503                SpeedTargetVal += DeviFusemtr[i] * SpeedTargetMat[0][i]; 
+    504              }
+    505              SpeedTargetVal = SpeedTargetVal/ 1000;
+    506              
+    507              
+    508              
+    509              //计算左电机应输入的值。
+    510              //储存为上一次左电机的目标速度
+    511              SpeedLastTargetLeftVal = SpeedTargetLeftVal;
+    512              //左电机差速
+    513              if(SpeedDiffGetSwitch == 1)
+    514              {
+    515                SpeedTargetLeftVal = SpeedDiffGet(SpeedTargetVal, 0);   
+    516                SpeedTargetLeftVal=(SpeedTargetLeftVal*9+SpeedLastTargetLeftVal*1)/10;
+    517              }
+    518              else
+    519              {
+    520                SpeedTargetLeftVal = SpeedTargetVal;
+    521                SpeedTargetLeftVal=(SpeedTargetLeftVal*9+SpeedLastTargetLeftVal*1)/10; 
+    522              }
+    523              //左电机P分量
+    524               temp_speed_bias=AbsInt (SpeedTargetLeftVal - SpeedNowLeft);
+    525              
+    526                speed_kd=SpeedPIDDVal;
+    527                speed_kp=0;
+    528               for(i = 0;i < 11; i++)
+    529              {
+    530                speed_kp += DeviFusemtr[i] * speedP_goal[i];      
+    531              }
+    532              speed_kp = speed_kp / 1000;
+    533              SpeedPIDPVal=speed_kp;
+    534              //speed_kp=SpeedPIDPVal;        //修改过
+    535               SpeedLeftValP +=SpeedTargetLeftVal - SpeedNowLeft;
+    536                 //积分限幅
+    537              if(SpeedLeftValP>800)
+    538              {
+    539                SpeedLeftValP=800;
+    540              }
+    541              else if(SpeedLeftValP<-800)
+    542              {
+    543                 SpeedLeftValP=-800;
+    544              }
+    545              //左电机D分量
+    546              SpeedLeftValD +=  (SpeedTargetLeftVal - SpeedNowLeft) - (SpeedLastTargetLeftVal - SpeedLastLeft);
+    547              
+    548              //左电机输入值。/////////////////////////////////////////////////增量式！！
+    549              SpeedLeftVal = (speed_kp*SpeedLeftValP +speed_kd* SpeedLeftValD*10)/100;
+    550             
+    551              //左电机输入值的限幅。
+    552              if(SpeedLeftVal >= MotorPIDMax)
+    553              {
+    554                SpeedLeftVal = MotorPIDMax;
+    555              }
+    556              else if(SpeedLeftVal <= MotorPIDMin)
+    557              {
+    558                SpeedLeftVal = MotorPIDMin;
+    559              }
+    560              else
+    561              {
+    562                
+    563              }
+    564              
+    565                
+    566              //计算右电机应输入的值。
+    567              //储存为上一次右电机的目标速度
+    568              SpeedLastTargetRightVal = SpeedTargetRightVal;
+    569              //右电机差速
+    570              if(SpeedDiffGetSwitch == 1)
+    571              {
+    572                SpeedTargetRightVal = SpeedDiffGet(SpeedTargetVal, 1);  
+    573                SpeedTargetRightVal=(SpeedTargetRightVal*9+SpeedLastTargetRightVal*1)/10;
+    574              }
+    575              else
+    576              {
+    577                SpeedTargetRightVal = SpeedTargetVal;
+    578              }
+    579              
+    580                temp_speed_bias=AbsInt (SpeedTargetRightVal - SpeedNowRight);
+    581              
+    582              
+    583              speed_kd=SpeedPIDDVal;
+    584              //右电机P分量
+    585              speed_kp=0;
+    586              
+    587               for(i = 0;i < 11; i++)
+    588              {
+    589                speed_kp += DeviFusemtr[i] * speedP_goal[i];      
+    590              }
+    591              speed_kp = speed_kp / 1000;
+    592              SpeedPIDPVal=speed_kp;
+    593              //speed_kp=SpeedPIDPVal;         //修改过
+    594              SpeedRightValP +=  SpeedTargetRightVal - SpeedNowRight;
+    595          
+    596               //积分限幅
+    597              if(SpeedRightValP>800)
+    598              {
+    599                SpeedRightValP=800;
+    600              }
+    601              else if(SpeedRightValP<-800)
+    602              {
+    603                 SpeedRightValP=-800;
+    604              }
+    605              //右电机D分量
+    606              SpeedRightValD +=   ((SpeedTargetRightVal - SpeedNowRight) - (SpeedLastTargetRightVal - SpeedLastRight));
+    607              //右电机输入值。/////////////////////////////////////////////////增量式！！
+    608              SpeedRightVal = (speed_kp *SpeedRightValP/10 + speed_kd*SpeedRightValD);
+    609              //右电机输入值的限幅。
+    610              if(SpeedRightVal >= MotorPIDMax)
+    611              {
+    612                SpeedRightVal = MotorPIDMax;
+    613              }
+    614              else if(SpeedRightVal <= MotorPIDMin)
+    615              {
+    616                SpeedRightVal = MotorPIDMin;
+    617              }
+    618              else
+    619              {
+    620              }
+    621              
+    622              //两轮速度都超过起飞阈值后，就转为正常的电机PID控制。
+    623              if(SpeedNowLeft > MotorTakeOffQuadCountLimit)// && SpeedNowRight > MotorTakeOffQuadCountLimit
+    624              {
+    625                MotorTakeOffFlag = 0;
+    626              }
+    627              else
+    628              {
+    629                //没达到起飞脉冲数，则持续输出很高的速度。
+    630                SpeedLeftVal = MotorTakeOffNum;
+    631                SpeedRightVal = MotorTakeOffNum;
+    632              }
+    633              
+    634              
+    635              
+    636            }
+    637            //以下是起飞后的电机控制
+    638            else
+    639            {
+    640              //偏差等级的获取
+    641              DeviFuseLevel = AbsInt(DeviFuse) / 10;
+    642              if(DeviFuseLevel > 8)
+    643              {
+    644                //偏差等级的修正
+    645                DeviFuseLevel = 9;
+    646              }
+    647              else
+    648              { 
+    649              }
+    650              
+    651              
+    652              //模糊求取平均目标脉冲数
+    653              SpeedTargetVal = 0;
+    654          //    if(StopFlag==0)
+    655          //    {
+    656                  for(i = 0;i < 11; i++)
+    657                 {
+    658          //          for(j=0;j <9 ;j++)
+    659          //          {
+    660          //             SpeedTargetVal += DeviFusemtr[i]*DeviFuse_dotmtr[j] * SpeedTargetMat[i][j]/1000;      
+    661          //          } 
+    662                   SpeedTargetVal += DeviFusemtr[i] * SpeedTargetMat[0][i]; 
+    663                  }
+    664                 SpeedTargetVal = SpeedTargetVal / 1000;
+    665          //    }
+    666          //    else
+    667          //    {
+    668          //      //停车，目标速度置零
+    669          //    }
+    670          
+    671            
+    672              //特殊赛道时，平均目标速度的特殊处理。
+    673              SpeedTargetVal = SpeedTargetValSpePathDeal(SpeedTargetVal);
+    674              
+    675              //停车时的速度控制
+    676              if(StopLineControlFlag==1 && StopRealFlag==0)
+    677              {
+    678                  if(StopLineSpeed == 0)
+    679                  {
+    680                      StopLineSpeed = SpeedTargetVal - 10;
+    681                      StopLineSpeedControlPauseFlag = 1 - StopLineSpeedControlPauseFlag;
+    682                  } 
+    683                  else if(SpeedNowLeft < 50)
+    684                  {
+    685                      StopRealFlag = 1;
+    686                      StopLineSpeedControlPauseFlag = 1;
+    687                  }
+    688                  else
+    689                  {
+    690                      StopLineSpeed -= 10;
+    691                      if(StopLineSpeed<50)
+    692                      {
+    693                          StopLineSpeed = 50;
+    694                      }
+    695                      StopLineSpeedControlPauseFlag = 1 - StopLineSpeedControlPauseFlag;
+    696                  }
+    697                  SpeedTargetVal = StopLineSpeed;
+    698                  //提前把驱动板的使能去掉，便于加反电压
+    699                  FTM0_C4V = 0;
+    700                  FTM0_C5V = 0;
+    701              }
+    702              
+    703              
+    704               //计算左电机应输入的值。
+    705              //储存为上一次左电机的目标速度
+    706              SpeedLastTargetLeftVal = SpeedTargetLeftVal;
+    707              //左电机差速
+    708              if(0)//if(SpeedDiffGetSwitch == 1)
+    709              {
+    710                SpeedTargetLeftVal = SpeedDiffGet(SpeedTargetVal, 0);   
+    711                SpeedTargetLeftVal=(SpeedTargetLeftVal*9+SpeedLastTargetLeftVal*1)/10;
+    712              }
+    713              else
+    714              {
+    715                SpeedTargetLeftVal = SpeedTargetVal;
+    716                SpeedTargetLeftVal=(SpeedTargetLeftVal*9+SpeedLastTargetLeftVal*1)/10;
+    717              }
+    718              
+    719              //如果堵转的话就停下(需要编码器，刚开始做车的阶段关闭)
+    720              /*if(SpeedNowLeft<50)
+    721              {
+    722                  StopFlagMaxCount++;
+    723                  if(StopFlagMaxCount >= 12)
+    724                  {
+    725                     DuZhuanFlag = 1;
+    726                  }
+    727              }
+    728              else
+    729              {
+    730                  StopFlagMaxCount = 0;
+    731              }*/
+    732              
+    733              //左电机D分量
+    734              temp_speed_bias= SpeedTargetLeftVal - SpeedNowLeft;
+    735               speed_kd=SpeedPIDDVal;
+    736              
+    737              speed_kp=0;
+    738               for(i = 0;i < 11; i++)
+    739              {
+    740                speed_kp += DeviFusemtr[i] * speedP_goal[i];      
+    741              }
+    742              speed_kp = speed_kp / 1000;
+    743              
+    744          
+    745              speed_kp=SpeedPIDPVal;
+    746              SpeedLeftValP +=SpeedTargetLeftVal - SpeedNowLeft;
+    747             
+    748                //积分限幅
+    749              if(SpeedLeftValP>800)
+    750              {
+    751                SpeedLeftValP=800;
+    752              }
+    753              else if(SpeedLeftValP<-800)
+    754              {
+    755                 SpeedLeftValP=-800;
+    756              }
+    757              
+    758              //左电机D分量
+    759              SpeedLeftValD +=  (SpeedTargetLeftVal - SpeedNowLeft) - (SpeedLastTargetLeftVal - SpeedLastLeft);
+    760              
+    761              //左电机输入值。/////////////////////////////////////////////////增量式！！
+    762              SpeedLeftVal = (speed_kp*SpeedLeftValP +speed_kd* SpeedLeftValD*10)/100;
+    763             
+    764              //左电机输入值的限幅。
+    765              if(SpeedLeftVal >= MotorPIDMax)
+    766              {
+    767                SpeedLeftVal = MotorPIDMax;
+    768              }
+    769              else if(SpeedLeftVal <= MotorPIDMin)
+    770              {
+    771                SpeedLeftVal = MotorPIDMin;
+    772              }
+    773              else
+    774              {
+    775                
+    776              }
+    777          
+    778             
+    779                
+    780              //计算右电机应输入的值。
+    781              //储存为上一次右电机的目标速度
+    782              SpeedLastTargetRightVal = SpeedTargetRightVal;
+    783              //右电机差速
+    784              if(SpeedDiffGetSwitch == 1)
+    785              {
+    786                SpeedTargetRightVal = SpeedDiffGet(SpeedTargetVal, 1);   
+    787                SpeedTargetRightVal=(SpeedTargetRightVal*9+SpeedLastTargetRightVal*1)/10;
+    788              }
+    789              else
+    790              {
+    791                SpeedTargetRightVal = SpeedTargetVal; 
+    792              }
+    793              //右电机P分量
+    794               temp_speed_bias=SpeedTargetRightVal - SpeedNowRight;
+    795           
+    796              speed_kd=SpeedPIDDVal;
+    797                speed_kp=0;
+    798               for(i = 0;i < 11; i++)
+    799              {
+    800                speed_kp += DeviFusemtr[i] * speedP_goal[i];      
+    801              }
+    802              speed_kp = speed_kp / 1000;
+    803             
+    804                speed_kp=SpeedPIDPVal;
+    805               SpeedRightValP +=  SpeedTargetRightVal - SpeedNowRight;
+    806          
+    807               //积分限幅
+    808              if(SpeedRightValP>800)
+    809              {
+    810                SpeedRightValP=800;
+    811              }
+    812              else if(SpeedRightValP<-800)
+    813              {
+    814                 SpeedRightValP=-800;
+    815              }
+    816              //右电机D分量
+    817              SpeedRightValD +=  ((SpeedTargetRightVal - SpeedNowRight) - (SpeedLastTargetRightVal - SpeedLastRight));
+    818              //右电机输入值。/////////////////////////////////////////////////增量式！！
+    819              SpeedRightVal = (speed_kp *SpeedRightValP/10 + speed_kd*SpeedRightValD);
+    820              
+    821              //右电机输入值的限幅。
+    822              if(SpeedRightVal >= MotorPIDMax)
+    823              {
+    824                SpeedRightVal = MotorPIDMax;
+    825              }
+    826              else if(SpeedRightVal <= MotorPIDMin)
+    827              {
+    828                SpeedRightVal = MotorPIDMin;
+    829              }
+    830              else
+    831              {
+    832                
+    833              }
+    834          
+    835            }
+    836          
+    837                if(StopFlag == 1)   //确认完全停车后，输出为0
+    838                {
+    839                    //停车保险计数
+    840                    StopFlagMaxCount++;
+    841                    //int32 speed;//车的中心速度，两轮速度的平均值
+    842                   //左右轮任何一个轮子速度低于某值，或到一定时间，则完全停车，停下电机。
+    843                   if(SpeedNowLeft < 20 || SpeedNowRight < 20 || StopFlagMaxCount > StopFlagMaxCountNum * 6) //16ms进来一次，乘以6表示以0.1s为单位。
+    844                   {
+    845                     StopRealFlag = 1;//完全停车，停下电机      
+    846                   }
+    847                   else
+    848                   {      
+    849                   }      
+    850                }
+    851                else
+    852                {
+    853                }  
+    854            
+    855                if(StopRealFlag == 0)
+    856                {
+    857                  if(StopLineCheckFlag==1 && DuZhuanFlag==0 && TimeOutFlag==0 && RunOutFlag==0 && StopLineControlFlag == 0)
+    858                  {
+    859                      StopLineControlFlag = 1;LCD_CLS();LCD_P8x16Str(12,3,"StopLine");
+    860                  }
+    861                  else if(DuZhuanFlag==1 && StopLineCheckFlag==0 && TimeOutFlag==0 && RunOutFlag==0){StopRealFlag = 1;LCD_CLS();LCD_P8x16Str(12,3,"DuZhuan");}
+    862                  else if(DuZhuanFlag==0 && StopLineCheckFlag==0 && TimeOutFlag==1 &&  RunOutFlag==0){StopRealFlag = 1;}
+    863                  else if(DuZhuanFlag==0 && StopLineCheckFlag==0 && TimeOutFlag==0 &&  RunOutFlag==1){StopRealFlag = 1;LCD_CLS();LCD_P8x16Str(12,3,"RunOut");}
+    864                }
+    865                if(StopRealFlag == 1)
+    866                {
+    867                  FTM0_C4V = 0;
+    868                  FTM0_C5V = 0;
+    869                  FTM0_C6V = 0;
+    870                  FTM0_C7V = 0;
+    871                }
+    872                else
+    873                {
+    874                  //赋值给电机实际对应的I/O口。
+    875                  if(SpeedLeftVal>0)
+    876                  {
+    877                   // FTM0_C4V = 100;
+    878                   //FTM0_C5V = 100;
+    879                   FTM0_C5V = 300;
+    880                   FTM0_C4V = 100;//SpeedLeftVal;
+    881              
+    882                    if(StopLineSpeedControlPauseFlag == 1)
+    883                    {
+    884                      FTM0_C4V = 1000;
+    885                      FTM0_C5V = 1000;
+    886                    }
+    887                  }
+    888                  else
+    889                  {
+    890                    
+    891                   // FTM0_C4V = 100;
+    892                   // FTM0_C5V = 100;
+    893                    FTM0_C5V = 300;
+    894                    FTM0_C4V = 100;//0-SpeedLeftVal;          
+    895                    if(StopLineSpeedControlPauseFlag == 1)
+    896                    {
+    897                      FTM0_C4V = 1000;
+    898                      FTM0_C5V = 1000;          
+    899                    }
+    900                  }
+    901                  
+    902                  if(SpeedRightVal>0)
+    903                  {
+    904                       
+    905                  // FTM0_C7V = 100;        
+    906                   // FTM0_C6V = 100;
+    907                    FTM0_C6V = 300;        
+    908                    FTM0_C7V = 100;//SpeedRightVal;
+    909                    if(StopLineSpeedControlPauseFlag == 1)
+    910                    {
+    911                      FTM0_C6V = 1000;
+    912                      FTM0_C7V = 1000;
+    913                    }
+    914                    //FTM0_C6V = SpeedRightVal;
+    915                    //FTM0_C7V = 0;  
+    916                  }
+    917                  else
+    918                  {
+    919                       
+    920                    //FTM0_C7V = 100;        
+    921                   // FTM0_C6V = 100;
+    922                   FTM0_C7V = 100;//0-SpeedRightVal;        
+    923                    FTM0_C6V = 300;
+    924                    if(StopLineSpeedControlPauseFlag == 1)
+    925                    {
+    926                      FTM0_C6V = 1000;
+    927                      FTM0_C7V = 1000;
+    928                    }
+    929                    //FTM0_C6V = 0;
+    930                    //FTM0_C7V = 0-SpeedRightVal;   
+    931                  }
+    932                }
+    933            return 1;
+    934          }
+    935          
+    936          
+    937          
+    938          
+    939          
+    940          
+
+Errors: 1
+Warnings: 6

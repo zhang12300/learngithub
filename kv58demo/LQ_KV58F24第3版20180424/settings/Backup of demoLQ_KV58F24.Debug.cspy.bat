@@ -25,7 +25,7 @@ if not "%~1" == "" goto debugFile
 
 @echo on 
 
-"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "C:\Users\Lenovo\Desktop\class3\SRTP\LQ_KV58F24第3版20180424\settings\Backup of demoLQ_KV58F24.Debug.general.xcl" --backend -f "C:\Users\Lenovo\Desktop\class3\SRTP\LQ_KV58F24第3版20180424\settings\Backup of demoLQ_KV58F24.Debug.driver.xcl" 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "C:\SPB_Data\learngit\learngithub\kv58demo\LQ_KV58F24第3版20180424\settings\Backup of demoLQ_KV58F24.Debug.general.xcl" --backend -f "C:\SPB_Data\learngit\learngithub\kv58demo\LQ_KV58F24第3版20180424\settings\Backup of demoLQ_KV58F24.Debug.driver.xcl" 
 
 @echo off 
 goto end 
@@ -34,7 +34,7 @@ goto end
 
 @echo on 
 
-"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "C:\Users\Lenovo\Desktop\class3\SRTP\LQ_KV58F24第3版20180424\settings\Backup of demoLQ_KV58F24.Debug.general.xcl" "--debug_file=%~1" --backend -f "C:\Users\Lenovo\Desktop\class3\SRTP\LQ_KV58F24第3版20180424\settings\Backup of demoLQ_KV58F24.Debug.driver.xcl" 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "C:\SPB_Data\learngit\learngithub\kv58demo\LQ_KV58F24第3版20180424\settings\Backup of demoLQ_KV58F24.Debug.general.xcl" "--debug_file=%~1" --backend -f "C:\SPB_Data\learngit\learngithub\kv58demo\LQ_KV58F24第3版20180424\settings\Backup of demoLQ_KV58F24.Debug.driver.xcl" 
 
 @echo off 
 :end

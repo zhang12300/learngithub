@@ -412,6 +412,20 @@ void LCD_CLS(void)
   }
 }
 
+//Debug初始化
+uint8 DebugInit(void)
+{
+  //OLED初始化。这里会显示“Hello AE86”
+  LCD_Init();
+  //FLASH初始化
+  FlashInit();
+  //FLASH模块值初始化读取。
+  //FlashInitRead();
+  //Debug用的引脚的初始化。
+  DebugPortInit();
+  
+  return 1;
+}
 void LCD_Init(void)        
 { 
   //-----端口初始化----//
